@@ -1,6 +1,8 @@
 # Swift5 API client for Blockfrost
 
 Blockfrost is an API as a service that allows users to interact with the Cardano blockchain and parts of its ecosystem.
+      
+Note: work is in progress, we need to cover endpoints with tests.
 
 ## Tokens
 

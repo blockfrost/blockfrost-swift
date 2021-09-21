@@ -3,8 +3,29 @@
 //
 
 import Foundation
+import BlockfrostSwiftSDK
+import Nimble
+
 open class TestUtils {
      public class func getEnvProjectId() -> String? {
           ProcessInfo.processInfo.environment["BF_PROJECT_ID"]
+     }
+     public class func getEnvIpfsProjectId() -> String? {
+          ProcessInfo.processInfo.environment["BF_IPFS_PROJECT_ID"]
+     }
+
+     public class func initConfig(ipfs: Bool = false) -> BlockfrostConfig? {
+          let config = BlockfrostConfig()
+          config.basePath = TestConsts.TEST_URL
+          guard let projectId = (ipfs ? getEnvIpfsProjectId() : getEnvProjectId()) else {
+               return nil
+          }
+          config.projectId = projectId
+
+          BlockfrostStaticConfig.basePath = config.basePath
+          BlockfrostStaticConfig.projectId = config.projectId
+
+          BlockfrostConfig.DEFAULT_COUNT = 10  // not to stress backend too much with page loaders
+          return config
      }
 }

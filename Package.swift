@@ -23,6 +23,8 @@ let package = Package(
         .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.4.3")),
         //.package(url: "https://github.com/yannickl/AwaitKit", .upToNextMajor(from: "5.2.0")),
         //.package(url: "https://github.com/belozierov/SwiftCoroutine", .upToNextMajor(from: "2.1.11")),
+        .package(url: "https://github.com/Quick/Quick.git", .upToNextMajor(from: "4.0.0")),
+        .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "7.0.2")),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -35,6 +37,10 @@ let package = Package(
             path: "BlockfrostSwiftSDK/Classes"
         ),
         .testTarget(name: "blockfrost-tests",
-                    dependencies: ["BlockfrostSwiftSDK"])
+                    dependencies: [
+                        "BlockfrostSwiftSDK",
+                        "Quick",
+                        "Nimble",
+                    ])
     ]
 )

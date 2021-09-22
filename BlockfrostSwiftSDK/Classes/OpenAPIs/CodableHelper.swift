@@ -74,7 +74,21 @@ open class CodableHelper {
         if lhs == nil && rhs == nil { return true }
         if (lhs == nil) != (rhs == nil) { return false }
 
-        switch (lhs, rhs) {
+        var lhsOut = lhs
+        var rhsOut = rhs
+        while(true) {
+            if let x = lhsOut as? AnyCodable {
+                lhsOut = x.value
+            } else { break }
+        }
+
+        while(true) {
+            if let x = rhsOut as? AnyCodable {
+                rhsOut = x.value
+            } else { break }
+        }
+
+        switch (lhsOut, rhsOut) {
         case is (Void, Void):
             return true
         case let (lhs as AnyCodable, rhs as AnyCodable):

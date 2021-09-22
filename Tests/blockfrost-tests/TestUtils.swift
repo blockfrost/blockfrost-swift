@@ -25,7 +25,7 @@ open class TestUtils {
 
      public class func initConfig(ipfs: Bool = false) -> BlockfrostConfig? {
           let config = BlockfrostConfig()
-          config.basePath = TestConsts.TEST_URL
+          config.basePath = ipfs ? TestConsts.IPFS_URL : TestConsts.TEST_URL
           guard let projectId = (
                   ipfs ? getEnvIpfsProjectId() :
                          getEnvProjectId() ?? (TestConsts.IS_TESTNET ? getEnvProjectIdTestnet(): getEnvProjectIdMainnet())) else {

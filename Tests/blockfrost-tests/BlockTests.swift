@@ -8,87 +8,264 @@
 import Foundation
 import XCTest
 import Combine
+import Quick
+import Nimble
 @testable import BlockfrostSwiftSDK
 
-final class BlockTests: XCTestCase {
-    private let modelName = "Blocks"
-    private var config = BlockfrostConfig()
-    private var subscriptions = Set<AnyCancellable>()
-
-    private static let LOAD_PAGES = 15
-    private static let PAGE_CANCEL = 12
-    private static let PAGE_FAIL = 12
-
-    override func setUpWithError() throws {
-        config = BlockfrostConfig()
-        config.basePath = TestConsts.TEST_URL
-
-        guard let projectId = TestUtils.getEnvProjectId() else {
-            XCTFail("Project ID is not defined, use env var BF_PROJECT_ID")
-            throw NSError(domain: "Test failed, projectID not defined", code: 0)
-        }
-        config.projectId = projectId
-
-        BlockfrostStaticConfig.basePath = config.basePath
-        BlockfrostStaticConfig.projectId = config.projectId
-
-        BlockfrostConfig.DEFAULT_COUNT = 10  // not to stress backend too much with page loaders
-    }
-
-    override func tearDown() {
-    }
-
-    func testNextBlocks() {
-        let expectation = XCTestExpectation(description: "getNextBlocks")
-        let api = CardanoBlocksAPI(config: config)
-        let _ = api.getNextBlocks(hashOrNumber: "2828500") { resp in
-            switch(resp){
-            case let .failure(err):
-                XCTFail("Req failed: \(err)")
-            case let .success(r):
-                XCTAssert(r.count > 0)
-                XCTAssertEqual(r[0].height, 2828501)
-                XCTAssertEqual(r[0].time, 1628835022)
-                XCTAssertEqual(r[0].slot, 34465806)
-                XCTAssertEqual(r[0].epoch, 150)
-                XCTAssertEqual(r[0].epochSlot, 35406)
-                XCTAssertEqual(r[0].hash, "ec272cc78b0a73e47786169251e10fc051cdcb82c729d79a3619e79ac874bb78")
-                XCTAssertEqual(r[0].size, 3)
-                XCTAssertEqual(r[0].txCount, 0)
-                XCTAssertEqual(r[0].fees, nil)
-                XCTAssertEqual(r[0].output, nil)
-                XCTAssertEqual(r[0].blockVrf, "vrf_vk1ednlq9xx8kvhxlwah0l5ph9tp000ssemaaesv7athfm3uevl2gvqdkajlw")
-                XCTAssertEqual(r[0].previousBlock, "91e729ad104b1192042888abe97886e74d7fbc2315be6f0702ee6979c98ad223")
-                XCTAssertEqual(r[0].nextBlock, "5b06e069619500b062a6001c459ef68aa52af84894de7ee2c55b1adb090cbd73")
-                XCTAssertEqual(r[1].hash, "5b06e069619500b062a6001c459ef68aa52af84894de7ee2c55b1adb090cbd73")
-
-                XCTAssertEqual(r[10].fees, "250000")
-                XCTAssertEqual(r[10].output, "1236157")
-            }
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 10.0)
-    }
-
-    func fixtureGetLatestBlock() -> BlockContent? {
-        let expGetLatest = XCTestExpectation(description: "getLatestBlock")
-        let api = CardanoBlocksAPI(config: config)
+final class BlockTests: QuickSpec {
+    override func spec() {
+        var config = BlockfrostConfig()
+        var api: CardanoBlocksAPI!
         var lastBlock: BlockContent? = nil
 
-        let _ = api.getLatestBlock { resp in
-            switch(resp){
-            case let .failure(err):
-                XCTFail("Req failed: \(err)")
-                break
-            case let .success(r):
-                lastBlock = r
-                break
+        let LOAD_PAGES = 15
+        let PAGE_CANCEL = 12
+        let PAGE_FAIL = 12
+
+        beforeSuite {
+            let cfg = TestUtils.initConfig()
+            if cfg == nil {
+                fail("Project ID is not defined, use env var BF_PROJECT_ID")
             }
-            expGetLatest.fulfill()
+            config = cfg!
+            api = CardanoBlocksAPI(config: cfg)
         }
-        wait(for: [expGetLatest], timeout: 10)
-        return lastBlock
+
+        beforeEach {
+            api = CardanoBlocksAPI(config: config)
+        }
+
+        it("testNextBlocks_willLoadSinglePage") {
+            waitUntil(timeout: 3) { done in
+                let _ = api.getNextBlocks(hashOrNumber: "2828500") { resp in
+                    guard let r = TestUtils.getResult(resp: resp) else {
+                        done(); return;
+                    }
+
+                    expect(r).toNot(beEmpty())
+                    expect(r[0].height).to(equal(2828501))
+                    expect(r[0].time).to(equal(1562803711))
+                    expect(r[0].slot).to(equal(2830031))
+                    expect(r[0].epoch).to(equal(131))
+                    expect(r[0].epochSlot).to(equal(431))
+                    expect(r[0].hash).to(equal("cf1ef63c5655e1f883f1d3f7a79adc0823434c2a394ed7436e58412a75ed8d01"))
+                    expect(r[0].size).to(equal(1575))
+                    expect(r[0].txCount).to(equal(2))
+                    expect(r[0].fees).to(equal("352996"))
+                    expect(r[0].output).to(equal("2772474536329"))
+                    expect(r[0].blockVrf).to(beNil())
+                    expect(r[0].previousBlock).to(equal("89ee431a3591ea083a4d2c0c29e2f0569a2a63680fbe7fb5ecc4cd53254dcac2"))
+                    expect(r[0].nextBlock).to(equal("ea4142ae8425eb68bbeaed133f5b80f697d80a56b32fa4f506a1db69c6fd73c5"))
+                    expect(r[1].hash).to(equal("ea4142ae8425eb68bbeaed133f5b80f697d80a56b32fa4f506a1db69c6fd73c5"))
+                    expect(r[10].fees).to(beNil())
+                    expect(r[10].output).to(beNil())
+                    done()
+                }
+            }
+        }
+
+        describe("PageLoader tests on blocks") {
+            var subscriptions = Set<AnyCancellable>()
+            var loadOffset: Int!
+            var blockToLoad: String!
+
+            beforeSuite {
+                // Load latest block on the chain
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getLatestBlock { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+                        lastBlock = r
+                        done()
+                    }
+                }
+                expect(lastBlock).toNot(beNil())
+            }
+
+            beforeEach {
+                subscriptions.removeAll()
+                loadOffset = BlockfrostConfig.DEFAULT_COUNT * LOAD_PAGES
+                blockToLoad = String(lastBlock!.height! - loadOffset)
+            }
+
+            describe("DispatchPageLoader") {
+                it("testNextBlocksAll_willLoadAllPages") {
+                    var isOk = false
+                    waitUntil(timeout: 10) { done in
+                        self.fixtureDispatchLoader(api: api, blockToLoad: blockToLoad) { loader, resp in
+                            guard let res = TestUtils.getResult(resp: resp) else {
+                                done(); return;
+                            }
+
+                            isOk = true
+                            expect(res.count).to(beGreaterThanOrEqualTo(BlockfrostConfig.DEFAULT_COUNT * LOAD_PAGES))
+                            expect(res[0].height).to(equal(lastBlock!.height! - loadOffset + 1))
+                            done()
+                        }
+                    }
+                    expect(isOk).to(beTrue())
+                }
+
+                it("testNextBlocksAll_willBeCancelledOnPage12") {
+                    var isOk = false
+                    waitUntil(timeout: 10) { done in
+                        self.fixtureDispatchLoader(api: api, blockToLoad: blockToLoad, pageCancel: PAGE_CANCEL) { loader, res in
+                            switch (res) {
+                            case let .failure(err):
+                                expect(err).to(matchError(PageLoaderCancelled.self))
+                                isOk = true
+                                break
+                            case .success(_):
+                                XCTFail("Loader succeeded, but should have been cancelled")
+                                break
+                            }
+                            done()
+                        }
+                    }
+                    expect(isOk).to(beTrue())
+                }
+
+                it("testNextBlocksAll_willFailOnPage12") {
+                    var isOk = false
+                    waitUntil(timeout: 10) { done in
+                        self.fixtureDispatchLoader(api: api, blockToLoad: blockToLoad, pageFail: PAGE_FAIL) { loader, res in
+                            switch (res) {
+                            case let .failure(err):
+                                expect(err).to(matchError(PageLoaderError.self))
+                                expect((err as! PageLoaderError).page).to(equal(PAGE_FAIL))
+                                isOk = true
+                                break
+                            case .success(_):
+                                fail("Loader succeeded, but should have failed")
+                                break
+                            }
+                            done()
+                        }
+                    }
+                    expect(isOk).to(beTrue())
+                }
+            }
+
+            describe("CombinePageLoader") {
+                it("testNextBlocksAll_willLoadAllPages") {
+                    var isOk = 0
+                    let ex1 = XCTestExpectation(description: "Async")
+                    let ex2 = XCTestExpectation(description: "Async")
+                    self.fixtureCombineLoader(api: api, blockToLoad: blockToLoad, onCancelled: { ex1.fulfill(); ex2.fulfill() })
+                        .sink(receiveCompletion: { comp in
+                            switch(comp){
+                            case .finished:
+                                isOk += 1
+                                break
+                            case let .failure(err):
+                                fail("Loader failed: \(err)")
+                                break
+                            }
+                            ex2.fulfill()
+                        }, receiveValue: { val in
+                            switch(val){
+                            case .started: break
+                            case let .pageLoaded(page):
+                                if page.0 == 1 {
+                                    isOk += 1
+                                    expect(page.1).toNot(beEmpty())
+                                    expect(page.1[0].height).to(equal(lastBlock!.height! - loadOffset + 1))
+                                } else if page.0 == LOAD_PAGES {
+                                    isOk += 1
+                                    expect(page.1).toNot(beEmpty())
+                                }
+                                if page.0 > LOAD_PAGES + 1 && page.1.count > 0 {
+                                    fail("Loader loaded too many pages: \(page.0) for block \(blockToLoad ?? "")")
+                                }
+                                break
+                            case .completed(_):
+                                isOk += 1
+                                ex1.fulfill()
+                                break
+                            }
+                        }).store(in: &subscriptions)
+                    self.wait(for: [ex1, ex2], timeout: 10)
+                    expect(isOk).to(equal(4))
+                }
+
+                it("testNextBlocksAll_willBeCancelledOnPage12") {
+                    var isOk = 0
+                    waitUntil(timeout: 10) { done in
+                        var subs = [AnyCancellable { }]
+                        subs[0] = self.fixtureCombineLoader(api: api, blockToLoad: blockToLoad,
+                                onCancelled: {
+                                    isOk += 1
+                                    done()
+                                },
+                                pageCancel: PAGE_CANCEL,
+                                cancelBlock: {
+                                    subs[0].cancel()
+                                }
+                        ).sink(receiveCompletion: { comp in
+                            switch(comp){
+                            case .finished:
+                                fail("Loader finished successfully but should have been cancelled")
+                                break
+                            case let .failure(err):
+                                fail("Subscription cancellation should not trigger sink completion: \(err)")
+                                break
+                            }
+                            done()
+                        }, receiveValue: { val in
+                            switch(val){
+                            case .started: break
+                            case let .pageLoaded(page):
+                                if page.0 >= LOAD_PAGES {
+                                    fail("Loader loaded too far")
+                                }
+                                break
+                            case .completed(_):
+                                break
+                            }
+                        })
+                    }
+                    expect(isOk).to(equal(1))
+                }
+
+                it("testNextBlocksAll_willFailOnPage12") {
+                    var isOk = 0
+                    waitUntil(timeout: 10) { done in
+                        self.fixtureCombineLoader(api: api, blockToLoad: blockToLoad,
+                                onCancelled: {
+                                    fail("Load fail should not trigger cancellation")
+                                    done()
+                                },
+                                pageFail: PAGE_FAIL
+                        ).sink(receiveCompletion: { comp in
+                            switch(comp){
+                            case .finished:
+                                fail("Loader finished successfully but should have been cancelled")
+                                break
+                            case let .failure(err):
+                                expect(err).to(matchError(PageLoaderError.self))
+                                expect((err as! PageLoaderError).page).to(equal(PAGE_FAIL))
+                                isOk += 1
+                                break
+                            }
+                            done()
+                        }, receiveValue: { val in
+                            switch(val){
+                            case .started: break
+                            case let .pageLoaded(page):
+                                if page.0 >= LOAD_PAGES {
+                                    fail("Loader loaded too far")
+                                }
+                                break
+                            case .completed(_):
+                                break
+                            }
+                        }).store(in: &subscriptions)
+                    }
+                    expect(isOk).to(equal(1))
+                }
+            }
+        }
     }
 
     func fixtureDispatchLoader(api: CardanoBlocksAPI, blockToLoad: String, pageFail: Int? = nil, pageCancel: Int? = nil,
@@ -125,231 +302,6 @@ final class BlockTests: XCTestCase {
             onCancelled?()
         }).eraseToAnyPublisher()
         return subs
-    }
-
-    func testNextBlocksAll() {
-        let api = CardanoBlocksAPI(config: config)
-        let lastBlock = fixtureGetLatestBlock()
-        XCTAssertNotNil(lastBlock)
-
-        let loadOffset = BlockfrostConfig.DEFAULT_COUNT * BlockTests.LOAD_PAGES
-        let blockToLoad = String(lastBlock!.height! - loadOffset)
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        var isOk = false
-        let ex2 = XCTestExpectation(description: "Async")
-        fixtureDispatchLoader(api: api, blockToLoad: blockToLoad) { loader, res in
-            switch (res) {
-            case let .failure(err):
-                XCTFail("Loader failed: \(err)")
-                break
-            case let .success(res):
-                isOk = true
-                XCTAssertTrue(res.count >= BlockfrostConfig.DEFAULT_COUNT * BlockTests.LOAD_PAGES)
-                XCTAssertEqual(res[0].height, lastBlock!.height! - loadOffset + 1)
-                break
-            }
-            ex2.fulfill()
-        }
-        wait(for: [ex2], timeout: 10)
-        XCTAssertTrue(isOk)
-    }
-
-    func testNextBlocksAllCancel(){
-        let api = CardanoBlocksAPI(config: config)
-        let lastBlock = fixtureGetLatestBlock()
-        XCTAssertNotNil(lastBlock)
-
-        let loadOffset = BlockfrostConfig.DEFAULT_COUNT * BlockTests.LOAD_PAGES
-        let blockToLoad = String(lastBlock!.height! - loadOffset)
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        var isOk = false
-        let ex2 = XCTestExpectation(description: "Async")
-        fixtureDispatchLoader(api: api, blockToLoad: blockToLoad, pageCancel: BlockTests.PAGE_CANCEL) { loader, res in
-            switch (res) {
-            case let .failure(err):
-                XCTAssertTrue(err is PageLoaderCancelled)
-                isOk = true
-                break
-            case .success(_):
-                XCTFail("Loader succeeded, but should have been cancelled")
-                break
-            }
-            ex2.fulfill()
-        }
-        wait(for: [ex2], timeout: 10)
-        XCTAssertTrue(isOk)
-    }
-
-    func testNextBlocksAllFail(){
-        let api = CardanoBlocksAPI(config: config)
-        let lastBlock = fixtureGetLatestBlock()
-        XCTAssertNotNil(lastBlock)
-
-        let loadOffset = BlockfrostConfig.DEFAULT_COUNT * BlockTests.LOAD_PAGES
-        let blockToLoad = String(lastBlock!.height! - loadOffset)
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        var isOk = false
-        let ex2 = XCTestExpectation(description: "Async")
-        fixtureDispatchLoader(api: api, blockToLoad: blockToLoad, pageFail: BlockTests.PAGE_FAIL) { loader, res in
-            switch (res) {
-            case let .failure(err):
-                XCTAssertTrue(err is PageLoaderError)
-                XCTAssertEqual((err as! PageLoaderError).page, BlockTests.PAGE_FAIL)
-                isOk = true
-                break
-            case .success(_):
-                XCTFail("Loader succeeded, but should have failed")
-                break
-            }
-            ex2.fulfill()
-        }
-        wait(for: [ex2], timeout: 10)
-        XCTAssertTrue(isOk)
-    }
-
-    func testNextBlocksAllCombine() {
-        let api = CardanoBlocksAPI(config: config)
-        let lastBlock = fixtureGetLatestBlock()
-        XCTAssertNotNil(lastBlock)
-
-        let loadOffset = BlockfrostConfig.DEFAULT_COUNT * BlockTests.LOAD_PAGES
-        let blockToLoad = String(lastBlock!.height! - loadOffset)
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        var isOk = 0
-        let ex1 = XCTestExpectation(description: "Async")
-        let ex2 = XCTestExpectation(description: "Async")
-        fixtureCombineLoader(api: api, blockToLoad: blockToLoad, onCancelled: { ex1.fulfill(); ex2.fulfill() })
-            .sink(receiveCompletion: { comp in
-                switch(comp){
-                case .finished:
-                    isOk += 1
-                    break
-                case let .failure(err):
-                    XCTFail("Loader failed: \(err)")
-                    break
-                }
-                ex2.fulfill()
-            }, receiveValue: { val in
-                switch(val){
-                case .started: break
-                case let .pageLoaded(page):
-                    if page.0 == 1 {
-                        isOk += 1
-                        XCTAssertTrue(page.1.count >= 1)
-                        XCTAssertEqual(page.1[0].height, lastBlock!.height! - loadOffset + 1)
-                    } else if page.0 == BlockTests.LOAD_PAGES {
-                        isOk += 1
-                        XCTAssertTrue(page.1.count >= 1)
-                    }
-                    break
-                case .completed(_):
-                    isOk += 1
-                    ex1.fulfill()
-                    break
-                }
-            }).store(in: &subscriptions)
-        wait(for: [ex1, ex2], timeout: 10)
-        XCTAssertEqual(isOk, 4)
-    }
-
-    func testNextBlocksAllCombineCancel() {
-        let api = CardanoBlocksAPI(config: config)
-        let lastBlock = fixtureGetLatestBlock()
-        XCTAssertNotNil(lastBlock)
-
-        let loadOffset = BlockfrostConfig.DEFAULT_COUNT * BlockTests.LOAD_PAGES
-        let blockToLoad = String(lastBlock!.height! - loadOffset)
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        var isOk = 0
-        let ex1 = XCTestExpectation(description: "Async")
-        var subs = [AnyCancellable { }]
-
-        subs[0] = fixtureCombineLoader(api: api, blockToLoad: blockToLoad,
-                onCancelled: {
-                    isOk += 1
-                    ex1.fulfill()
-                },
-                pageCancel: BlockTests.PAGE_CANCEL,
-                cancelBlock: {
-                    subs[0].cancel()
-                }
-        ).sink(receiveCompletion: { comp in
-                switch(comp){
-                case .finished:
-                    XCTFail("Loader finished successfully but should have been cancelled")
-                    break
-                case let .failure(err):
-                    XCTFail("Subscription cancellation should not trigger sink completion: \(err)")
-                    break
-                }
-                ex1.fulfill()
-            }, receiveValue: { val in
-                switch(val){
-                case .started: break
-                case let .pageLoaded(page):
-                    if page.0 == BlockTests.LOAD_PAGES {
-                        XCTFail("Loader loaded too far")
-                    }
-                    break
-                case .completed(_):
-                    break
-                }
-            })
-
-        wait(for: [ex1], timeout: 10)
-        XCTAssertEqual(isOk, 1)
-    }
-
-    func testNextBlocksAllCombineFail() {
-        let api = CardanoBlocksAPI(config: config)
-        let lastBlock = fixtureGetLatestBlock()
-        XCTAssertNotNil(lastBlock)
-
-        let loadOffset = BlockfrostConfig.DEFAULT_COUNT * BlockTests.LOAD_PAGES
-        let blockToLoad = String(lastBlock!.height! - loadOffset)
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        var isOk = 0
-        let ex1 = XCTestExpectation(description: "Async")
-
-        fixtureCombineLoader(api: api, blockToLoad: blockToLoad,
-                onCancelled: {
-                    XCTFail("Load fail should not trigger cancellation")
-                    ex1.fulfill()
-                },
-                pageFail: BlockTests.PAGE_FAIL
-        ).sink(receiveCompletion: { comp in
-                switch(comp){
-                case .finished:
-                    XCTFail("Loader finished successfully but should have been cancelled")
-                    break
-                case let .failure(err):
-                    XCTAssertTrue(err is PageLoaderError)
-                    XCTAssertEqual((err as! PageLoaderError).page, BlockTests.PAGE_FAIL)
-                    isOk += 1
-                    break
-                }
-                ex1.fulfill()
-            }, receiveValue: { val in
-                switch(val){
-                case .started: break
-                case let .pageLoaded(page):
-                    if page.0 == BlockTests.LOAD_PAGES {
-                        XCTFail("Loader loaded too far")
-                    }
-                    break
-                case .completed(_):
-                    break
-                }
-            }).store(in: &subscriptions)
-
-        wait(for: [ex1], timeout: 10)
-        XCTAssertEqual(isOk, 1)
     }
 
 }

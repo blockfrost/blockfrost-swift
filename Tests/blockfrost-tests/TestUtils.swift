@@ -28,4 +28,14 @@ open class TestUtils {
           BlockfrostConfig.DEFAULT_COUNT = 10  // not to stress backend too much with page loaders
           return config
      }
+
+     public class func getResult<T>(resp: Swift.Result<T, Error>) -> T? {
+          switch (resp) {
+          case let .failure(err):
+               fail("Request failed with error: \(err)")
+               return nil
+          case let .success(r):
+               return r
+          }
+     }
 }

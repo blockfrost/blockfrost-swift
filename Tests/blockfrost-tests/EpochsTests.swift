@@ -128,6 +128,64 @@ final class EpochsTests: QuickSpec {
                     }
                 }
             }
+
+            it("next"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getNextEpochs(number: 242) { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r).toNot(beEmpty())
+                        expect(r[0].epoch).to(equal(243))
+                        done()
+                    }
+                }
+            }
+
+            it("prev"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getPreviousEpochs(number: 242) { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r).toNot(beEmpty())
+                        expect(r[0].epoch).to(beLessThan(242))
+                        done()
+                    }
+                }
+            }
+
+            it("blocks"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getBlocksForEpoch(number: 242, count: 2) { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r).toNot(beEmpty())
+                        done()
+                    }
+                }
+            }
+
+            it("blocksAndPool"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getBlocksForEpochAndPool(number: 242, poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy") { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r).toNot(beEmpty())
+                        done()
+                    }
+                }
+            }
         }
     }
 }

@@ -93,6 +93,89 @@ final class PoolsTests: QuickSpec {
                 }
             }
 
+            it("history"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getPoolHistory(poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy") { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r).toNot(beEmpty())
+                        done()
+                    }
+                }
+            }
+
+            it("metadata"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getPoolMetadata(poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy") { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r?.poolId).to(equal("pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy"))
+                        done()
+                    }
+                }
+            }
+
+            it("delegators"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getPoolDelegators(poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy") { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r).toNot(beEmpty())
+                        done()
+                    }
+                }
+            }
+
+            it("relays"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getPoolRelays(poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy") { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r).toNot(beEmpty())
+                        done()
+                    }
+                }
+            }
+
+            it("blocks"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getPoolBlocks(poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy", count: 10) { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r).toNot(beEmpty())
+                        done()
+                    }
+                }
+            }
+
+            it("updates"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getPoolUpdates(poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy", count: 10) { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r).toNot(beEmpty())
+                        done()
+                    }
+                }
+            }
 
         }
     }

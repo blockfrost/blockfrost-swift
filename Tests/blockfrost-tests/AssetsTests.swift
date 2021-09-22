@@ -95,6 +95,49 @@ class AssetsTests: QuickSpec {
                 }
             }
 
+            it("transactions") {
+                waitUntil(timeout: 10) { done in
+                    _ = api.getAssetTransactions(asset: "00000002df633853f6a47465c9496721d2d5b1291b8398016c0e87ae6e7574636f696e") { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r).toNot(beEmpty())
+                        done()
+                    }
+                }
+            }
+
+            it("addresses") {
+                waitUntil(timeout: 10) { done in
+                    _ = api.getAssetAddresses(asset: "00000002df633853f6a47465c9496721d2d5b1291b8398016c0e87ae6e7574636f696e") { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r).toNot(beEmpty())
+                        done()
+                    }
+                }
+            }
+
+            it("policy") {
+                waitUntil(timeout: 10) { done in
+                    _ = api.getPolicyAssets(policyId: "b863bc7369f46136ac1048adb2fa7dae3af944c3bbb2be2f216a8d4f") { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r).toNot(beEmpty())
+                        done()
+                    }
+                }
+            }
+
+            // TODO: empty policy
         }
     }
 

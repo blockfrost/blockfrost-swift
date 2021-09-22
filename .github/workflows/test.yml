@@ -2,7 +2,7 @@ name: tests
 
 on:
   push:
-    branches: [master]
+    branches: [master, test]
   pull_request:
     branches: [master]
 
@@ -30,25 +30,30 @@ jobs:
         run: |
           swift test
         env:
-          DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+          DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+          BF_MAINNET_PROJECT_ID: ${{ secrets.BF_MAINNET_PROJECT_ID }}
+          BF_IPFS_PROJECT_ID: ${{ secrets.BF_IPFS_PROJECT_ID }}
 
-  linux:
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        swift:
-          - "5.3"
-
-    name: "Linux (Swift ${{ matrix.swift }})"
-
-    container:
-      image: swift:${{ matrix.swift }}
-      options: --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --security-opt apparmor=unconfined
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Build and Test
-        run: |
-          swift test --enable-test-discovery
+#  linux:
+#    runs-on: ubuntu-latest
+#
+#    strategy:
+#      matrix:
+#        swift:
+#          - "5.4"
+#
+#    name: "Linux (Swift ${{ matrix.swift }})"
+#
+#    container:
+#      image: swift:${{ matrix.swift }}
+#      options: --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --security-opt apparmor=unconfined
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v1
+#      - name: Build and Test
+#        env:
+#          BF_MAINNET_PROJECT_ID: ${{ secrets.BF_MAINNET_PROJECT_ID }}
+#          BF_IPFS_PROJECT_ID: ${{ secrets.BF_IPFS_PROJECT_ID }}
+#        run: |
+#          swift test --enable-test-discovery

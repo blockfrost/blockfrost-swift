@@ -222,7 +222,7 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
         if let dt = response.data {
             let decoded = CodableHelper.decode(Status.self, from: dt)
             switch(decoded){
-            case .failure(let err): break
+            case .failure(_): break
             case .success(let res):
                 return ErrorResponse.errorStatus(response.response?.statusCode ?? 500, res, response.response, error)
             }

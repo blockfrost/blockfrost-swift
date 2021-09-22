@@ -129,7 +129,7 @@ class ConcurrentQueue<A> {
 func runNoExcLog(_ msg: String? = nil, task: @escaping () throws -> ()) {
     do {
         try task()
-    } catch let err {
+    } catch {
         //DDLogError("\(msg ?? "Exception"): \(err)")
     }
 }

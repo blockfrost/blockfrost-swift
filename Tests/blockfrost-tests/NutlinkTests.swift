@@ -104,19 +104,19 @@ final class NutlinkTests: QuickSpec {
                         expect(r[0].blockHeight).to(equal(4925818))
                         expect(r[0].txIndex).to(equal(1))
                         expect(r[0].payload).toNot(beNil())
-                        expect(r[0].payload).to(equal([
+                        expect(CodableHelper.eqAny(r[0].payload, [
                             [ "value": "0.10547", "source": "coinGecko" ],
                             [ "value": "0.10663800237162917", "source": "ergoOracles" ],
-                        ]))
+                        ])).to(beTrue())
 
                         expect(r[1].txHash).to(equal("b8cc8d75ca200555ca4efdf79599a06300c2a28ffbaa82fd23f22c8f95967bf9"))
                         expect(r[1].blockHeight).to(equal(4925982))
                         expect(r[1].txIndex).to(equal(1))
                         expect(r[1].payload).toNot(beNil())
-                        expect(r[1].payload).to(equal([
+                        expect(CodableHelper.eqAny(r[1].payload, [
                             [ "value": "0.106359", "source": "coinGecko" ],
                             [ "value": "0.10575249137006794", "source": "ergoOracles" ],
-                        ]))
+                        ])).to(beTrue())
 
                         done()
                     }
@@ -139,20 +139,20 @@ final class NutlinkTests: QuickSpec {
                         expect(r[0].blockHeight).to(equal(4925818))
                         expect(r[0].txIndex).to(equal(1))
                         expect(r[0].payload).toNot(beNil())
-                        expect(r[0].payload).to(equal([
+                        expect(CodableHelper.eqAny(r[0].payload, [
                             [ "value": "0.10547", "source": "coinGecko" ],
                             [ "value": "0.10663800237162917", "source": "ergoOracles" ],
-                        ]))
+                        ])).to(beTrue())
 
                         expect(r[1].address).to(equal("addr1q85yx2w7ragn5sx6umgmtjpc3865s9sg59sz4rrh6f90kgwfwlzu3w8ttacqg89mkdgwshwnplj5c5n9f8dhp0h55q2q7qm63t"))
                         expect(r[1].txHash).to(equal("b8cc8d75ca200555ca4efdf79599a06300c2a28ffbaa82fd23f22c8f95967bf9"))
                         expect(r[1].blockHeight).to(equal(4925982))
                         expect(r[1].txIndex).to(equal(1))
                         expect(r[1].payload).toNot(beNil())
-                        expect(r[1].payload).to(equal([
+                        expect(CodableHelper.eqAny(r[1].payload, [
                             [ "value": "0.106359", "source": "coinGecko" ],
                             [ "value": "0.10575249137006794", "source": "ergoOracles" ],
-                        ]))
+                        ])).to(beTrue())
 
                         done()
                     }

@@ -11,12 +11,16 @@ import Alamofire
 //public typealias OpenAPIClientAPI = BlockfrostSDK
 
 open class BlockfrostConfig {
+    public static let URL_MAINNET = "https://cardano-mainnet.blockfrost.io/api/v0"
+    public static let URL_TESTNET = "https://cardano-testnet.blockfrost.io/api/v0"
+    public static let URL_IPFS = "https://ipfs.blockfrost.io/api/v0"
+
     public static var DEFAULT_COUNT = 100
     public static var DEFAULT_PAGE = 1
     public static var DEFAULT_SORT_ORDER = SortOrder.asc
     public static var DEFAULT_BATCH_SIZE = 10
 
-    public var basePath = "https://cardano-mainnet.blockfrost.io/api/v0"
+    public var basePath = URL_MAINNET
     public var customHeaders: [String: String] = [:]
     public var credential: URLCredential?
     public var projectId: String?
@@ -37,12 +41,39 @@ open class BlockfrostConfig {
     }
 
     private static var sharedInstance: BlockfrostConfig = {
-        let instance = BlockfrostConfig()
+        let instance = BlockfrostConfig(basePath: BlockfrostConfig.URL_MAINNET, projectId: BlockfrostConfig.getEnvProjectId() ?? BlockfrostConfig.getEnvProjectIdMainnet())
+        return instance
+    }()
+
+    private static var sharedInstanceMainnet: BlockfrostConfig = {
+        let instance = BlockfrostConfig(basePath: BlockfrostConfig.URL_MAINNET, projectId: BlockfrostConfig.getEnvProjectId() ?? BlockfrostConfig.getEnvProjectIdMainnet())
+        return instance
+    }()
+
+    private static var sharedInstanceTestnet: BlockfrostConfig = {
+        let instance = BlockfrostConfig(basePath: BlockfrostConfig.URL_TESTNET, projectId: BlockfrostConfig.getEnvProjectId() ?? BlockfrostConfig.getEnvProjectIdTestnet())
+        return instance
+    }()
+
+    private static var sharedInstanceIpfs: BlockfrostConfig = {
+        let instance = BlockfrostConfig(basePath: BlockfrostConfig.URL_IPFS, projectId: BlockfrostConfig.getEnvProjectId() ?? BlockfrostConfig.getEnvIpfsProjectId())
         return instance
     }()
     
     public class func shared() -> BlockfrostConfig {
         sharedInstance
+    }
+
+    public class func testnetDefault() -> BlockfrostConfig {
+        sharedInstanceMainnet
+    }
+
+    public class func mainnetDefault() -> BlockfrostConfig {
+        sharedInstanceTestnet
+    }
+
+    public class func ipfsDefault() -> BlockfrostConfig {
+        sharedInstanceIpfs
     }
 
     public func clone() -> BlockfrostConfig {
@@ -55,6 +86,22 @@ open class BlockfrostConfig {
         r.apiResponseQueue = apiResponseQueue
         r.retryPolicy = retryPolicy
         return r
+    }
+
+    public class func getEnvProjectId() -> String? {
+        ProcessInfo.processInfo.environment["BF_PROJECT_ID"]
+    }
+
+    public class func getEnvProjectIdMainnet() -> String? {
+        ProcessInfo.processInfo.environment["BF_MAINNET_PROJECT_ID"]
+    }
+
+    public class func getEnvProjectIdTestnet() -> String? {
+        ProcessInfo.processInfo.environment["BF_TESTNET_PROJECT_ID"]
+    }
+
+    public class func getEnvIpfsProjectId() -> String? {
+        ProcessInfo.processInfo.environment["BF_IPFS_PROJECT_ID"]
     }
 }
 

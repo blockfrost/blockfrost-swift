@@ -11,6 +11,10 @@ import Foundation
 #endif
 
 open class IPFSAddAPI: BaseService {
+    public override init(config: BlockfrostConfig?) {
+        super.init(config: config ?? BlockfrostConfig.ipfsDefault())
+    }
+
     /**
      Add a file to IPFS
 

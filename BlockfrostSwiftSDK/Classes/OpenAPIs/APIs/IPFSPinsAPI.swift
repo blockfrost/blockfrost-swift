@@ -11,6 +11,10 @@ import Foundation
 #endif
 
 open class IPFSPinsAPI: BaseService {
+    public override init(config: BlockfrostConfig?) {
+        super.init(config: config ?? BlockfrostConfig.ipfsDefault())
+    }
+    
     /**
      List pinned objects
 

@@ -11,6 +11,10 @@ import Foundation
 #endif
 
 open class IPFSGatewayAPI: BaseService {
+    public override init(config: BlockfrostConfig?) {
+        super.init(config: config ?? BlockfrostConfig.ipfsDefault())
+    }
+    
     /**
      Relay to an IPFS gateway
 

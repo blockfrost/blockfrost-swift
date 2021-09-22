@@ -7,28 +7,12 @@ import BlockfrostSwiftSDK
 import Nimble
 
 open class TestUtils {
-     public class func getEnvProjectId() -> String? {
-          ProcessInfo.processInfo.environment["BF_PROJECT_ID"]
-     }
-
-     public class func getEnvProjectIdMainnet() -> String? {
-          ProcessInfo.processInfo.environment["BF_MAINNET_PROJECT_ID"]
-     }
-
-     public class func getEnvProjectIdTestnet() -> String? {
-          ProcessInfo.processInfo.environment["BF_TESTNET_PROJECT_ID"]
-     }
-
-     public class func getEnvIpfsProjectId() -> String? {
-          ProcessInfo.processInfo.environment["BF_IPFS_PROJECT_ID"]
-     }
-
      public class func initConfig(ipfs: Bool = false) -> BlockfrostConfig? {
           let config = BlockfrostConfig()
           config.basePath = ipfs ? TestConsts.IPFS_URL : TestConsts.TEST_URL
           guard let projectId = (
-                  ipfs ? getEnvIpfsProjectId() :
-                         getEnvProjectId() ?? (TestConsts.IS_TESTNET ? getEnvProjectIdTestnet(): getEnvProjectIdMainnet())) else {
+                  ipfs ? BlockfrostConfig.getEnvIpfsProjectId() :
+                          BlockfrostConfig.getEnvProjectId() ?? (TestConsts.IS_TESTNET ? BlockfrostConfig.getEnvProjectIdTestnet(): BlockfrostConfig.getEnvProjectIdMainnet())) else {
                return nil
           }
           config.projectId = projectId

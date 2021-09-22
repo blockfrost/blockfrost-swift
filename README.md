@@ -117,17 +117,33 @@ _ = api.getAddressDetails(address: "addr1q8zu4smzyf2r2mfqjd6tc6vxf2p8rccdfk82ye3
 }
 ```
         
+Project ID can be loaded from env
+```swift
+BlockfrostStaticConfig.projectId = BlockfrostConfig.getEnvProjectId()  // BF_PROJECT_ID
+BlockfrostStaticConfig.projectId = BlockfrostConfig.getEnvProjectIdMainnet()  // BF_MAINNET_PROJECT_ID
+BlockfrostStaticConfig.projectId = BlockfrostConfig.getEnvProjectIdTestnet()  // BF_TESTNET_PROJECT_ID
+BlockfrostStaticConfig.projectId = BlockfrostConfig.getEnvIpfsProjectId()  // BF_IPFS_PROJECT_ID
+```
+        
+Default configuration for testnet, project ID is loaded from env var `BF_TESTNET_PROJECT_ID`
+```swift
+let apiAdd = CardanoAddressesAPI(config: BlockfrostConfig.testnetDefault())
+```
+        
+Default configuration for IPFS, project ID is loaded from env var `BF_IPFS_PROJECT_ID`
+```swift
+let ipfsAdd = IPFSAddAPI(config: BlockfrostConfig.ipfsDefault())
+```
+        
 You can also define API-specific configuration
 ```swift
 let config = BlockfrostConfig()
-config.basePath = "https://cardano-testnet.blockfrost.io/api/v0"
-config.projectId = "project-id-for-testnet"
+config.basePath = BlockfrostConfig.URL_IPFS
+config.projectId = BlockfrostConfig.getEnvIpfsProjectId()
 config.retryPolicy = BlockfrostRetryPolicy(retryLimit: 10)    // specify custom retry policy
 
-let api = CardanoAddressesAPI(config: config)
+let ipfsAdd = apiAdd = IPFSAddAPI(config: cfg)
 ```
-
-
 
 ## Installation
 

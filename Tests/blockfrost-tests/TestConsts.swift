@@ -6,10 +6,12 @@
 //
 
 import Foundation
+import BlockfrostSwiftSDK
+
 public struct TestConsts {
-    public static let TESTNET_URL = "https://cardano-testnet.blockfrost.io/api/v0/"
-    public static let MAINNET_URL = "https://cardano-mainnet.blockfrost.io/api/v0/"
-    public static let IPFS_URL = "https://ipfs.blockfrost.io/api/v0"
+    public static let TESTNET_URL = BlockfrostConfig.URL_TESTNET
+    public static let MAINNET_URL = BlockfrostConfig.URL_MAINNET
+    public static let IPFS_URL = BlockfrostConfig.URL_IPFS
     public static let IS_TESTNET = false
     public static let TEST_URL = IS_TESTNET ? TESTNET_URL : MAINNET_URL
 }

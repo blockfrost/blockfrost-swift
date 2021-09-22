@@ -73,7 +73,7 @@ open class NutLinkAPI: BaseService {
     open func getAddressTickers(
         address: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil,
         apiResponseQueue: DispatchQueue? = nil,
-        completion: @escaping (_ result: Swift.Result<[NutlinkAddressTicker], Error>) -> Void
+        completion: @escaping (_ result: Swift.Result<[NutlinkAddressTickers], Error>) -> Void
     ) -> APIRequest {
         getAddressTickersWithRequestBuilder(address: address, count: count, page: page, order: order)
             .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
@@ -98,9 +98,9 @@ open class NutLinkAPI: BaseService {
         address: String, order: SortOrder? = nil,
         apiResponseQueue: DispatchQueue? = nil,
         batchSize: Int? = nil,
-        completion: @escaping (_ result: Swift.Result<[NutlinkAddressTicker], Error>) -> Void
+        completion: @escaping (_ result: Swift.Result<[NutlinkAddressTickers], Error>) -> Void
     ) -> APIRequest {
-        let loader = PageLoader<NutlinkAddressTicker>(batchSize: batchSize ?? config.batchSize)
+        let loader = PageLoader<NutlinkAddressTickers>(batchSize: batchSize ?? config.batchSize)
         loader.loadAll({ count, page, compl in
             _ = self.getAddressTickers(address: address, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
         }, completion: { compl in
@@ -121,7 +121,7 @@ open class NutLinkAPI: BaseService {
      - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
      - returns: RequestBuilder<[NutlinkAddressTicker]>
      */
-    open func getAddressTickersWithRequestBuilder(address: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil) -> RequestBuilder<[NutlinkAddressTicker]> {
+    open func getAddressTickersWithRequestBuilder(address: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil) -> RequestBuilder<[NutlinkAddressTickers]> {
         var localVariablePath = "/nutlink/{address}/tickers"
         let addressPreEscape = "\(APIHelper.mapValueToPathItem(address))"
         let addressPostEscape = addressPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
@@ -140,7 +140,7 @@ open class NutLinkAPI: BaseService {
 
         let localVariableHeaderParameters = APIHelper.rejectNilHeaders(localVariableNillableHeaders)
 
-        let localVariableRequestBuilder: RequestBuilder<[NutlinkAddressTicker]>.Type = config.requestBuilderFactory.getBuilder()
+        let localVariableRequestBuilder: RequestBuilder<[NutlinkAddressTickers]>.Type = config.requestBuilderFactory.getBuilder()
 
         return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
     }

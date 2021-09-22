@@ -11,43 +11,50 @@ import Foundation
 #endif
 
 public final class NutlinkAddressTicker: Codable, Hashable {
-    /** Name of the ticker */
-    public var name: String
-    /** Number of ticker records */
-    public var count: Int
-    /** Block height of the latest record */
-    public var latestBlock: Int
+    /** Hash of the transaction */
+    public var txHash: String
+    /** Block height of the record */
+    public var blockHeight: Int
+    /** Transaction index within the block */
+    public var txIndex: Int
+    /** Content of the ticker */
+    public var payload: AnyCodable
 
-    public init(name: String, count: Int, latestBlock: Int) {
-        self.name = name
-        self.count = count
-        self.latestBlock = latestBlock
+    public init(txHash: String, blockHeight: Int, txIndex: Int, payload: AnyCodable) {
+        self.txHash = txHash
+        self.blockHeight = blockHeight
+        self.txIndex = txIndex
+        self.payload = payload
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case name
-        case count
-        case latestBlock = "latest_block"
+        case txHash = "tx_hash"
+        case blockHeight = "block_height"
+        case txIndex = "tx_index"
+        case payload
     }
 
     // Encodable protocol methods
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(name, forKey: .name)
-        try container.encode(count, forKey: .count)
-        try container.encode(latestBlock, forKey: .latestBlock)
+        try container.encode(txHash, forKey: .txHash)
+        try container.encode(blockHeight, forKey: .blockHeight)
+        try container.encode(txIndex, forKey: .txIndex)
+        try container.encode(payload, forKey: .payload)
     }
 
     public static func == (lhs: NutlinkAddressTicker, rhs: NutlinkAddressTicker) -> Bool {
-        lhs.name == rhs.name &&
-            lhs.count == rhs.count &&
-            lhs.latestBlock == rhs.latestBlock
+        lhs.txHash == rhs.txHash &&
+            lhs.blockHeight == rhs.blockHeight &&
+            lhs.txIndex == rhs.txIndex &&
+            CodableHelper.eqAny(lhs.payload, rhs.payload)
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(name.hashValue)
-        hasher.combine(count.hashValue)
-        hasher.combine(latestBlock.hashValue)
+        hasher.combine(txHash.hashValue)
+        hasher.combine(blockHeight.hashValue)
+        hasher.combine(txIndex.hashValue)
+        hasher.combine(payload.hashValue)
     }
 }

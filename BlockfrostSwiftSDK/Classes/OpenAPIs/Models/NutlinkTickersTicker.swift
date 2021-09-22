@@ -20,9 +20,9 @@ public final class NutlinkTickersTicker: Codable, Hashable {
     /** Transaction index within the block */
     public var txIndex: Int
     /** Content of the ticker */
-    public var payload: [String: AnyCodable]
+    public var payload: AnyCodable
 
-    public init(address: String, txHash: String, blockHeight: Int, txIndex: Int, payload: [String: AnyCodable]) {
+    public init(address: String, txHash: String, blockHeight: Int, txIndex: Int, payload: AnyCodable) {
         self.address = address
         self.txHash = txHash
         self.blockHeight = blockHeight

@@ -20,7 +20,7 @@ final class BlockTests: QuickSpec {
         beforeSuite {
             let cfg = TestUtils.initConfig()
             if cfg == nil {
-                fail("Project ID is not defined, use env var BF_PROJECT_ID")
+                fatalError("Project ID is not defined, use env var BF_PROJECT_ID")
             }
             config = cfg!
             api = CardanoBlocksAPI(config: cfg)

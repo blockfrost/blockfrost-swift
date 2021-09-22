@@ -1,5 +1,5 @@
 
-github "Flight-School/AnyCodable" ~> 0.6.1
+github "Flight-School/AnyCodable" ~> 0.6.2
 github "Alamofire/Alamofire" ~> 5.4.3
 # github "yannickl/AwaitKit",  ~> 5.2.0
 # github "belozierov/SwiftCoroutine" ~> 2.1.11

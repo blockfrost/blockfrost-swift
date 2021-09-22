@@ -19,7 +19,7 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/Flight-School/AnyCodable", from: "0.6.1"),
+        .package(url: "https://github.com/Flight-School/AnyCodable", from: "0.6.2"),
         .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.4.3")),
         //.package(url: "https://github.com/yannickl/AwaitKit", .upToNextMajor(from: "5.2.0")),
         //.package(url: "https://github.com/belozierov/SwiftCoroutine", .upToNextMajor(from: "2.1.11")),

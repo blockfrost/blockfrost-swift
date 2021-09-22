@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.summary = 'Blockfrost Swift SDK'
   s.source_files = 'BlockfrostSwiftSDK/Classes/**/*.swift'
   
-  s.dependency 'AnyCodable-FlightSchool', '~> 0.6.1'
+  s.dependency 'AnyCodable-FlightSchool', '~> 0.6.2'
   s.dependency 'Alamofire', '~> 5.4.3'
   #s.dependency 'AwaitKit', '~> 5.2.0'
   #s.dependency 'SwiftCoroutine', '~>2.1.8'

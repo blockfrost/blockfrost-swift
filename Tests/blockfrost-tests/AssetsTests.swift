@@ -76,8 +76,8 @@ class AssetsTests: QuickSpec {
             }
 
             it("historyAll") {
-                BlockfrostConfig.DEFAULT_COUNT = 10
-                waitUntil(timeout: 1000) { done in
+                BlockfrostConfig.DEFAULT_COUNT = 100
+                waitUntil(timeout: 120) { done in
                     let _ = api.getAssetHistoryAll(asset: "d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a07370616365636f696e73") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

@@ -29,33 +29,33 @@ final class MetadataTests: QuickSpec {
         }
 
         describe("metadata") {
-//            it("labels"){
-//                waitUntil(timeout: 3) { done in
-//                    let _ = api.getTransactionMetadataLabels { resp in
-//                        guard let r = TestUtils.getResult(resp: resp) else {
-//                            done(); return;
-//                        }
-//
-//                        expect(r).toNot(beNil())
-//                        done()
-//                    }
-//                }
-//            }
-//
-//            it("txsLabelCbor"){
-//                waitUntil(timeout: 3) { done in
-//                    let _ = api.getTransactionMetadataCborForLabel(label: "1968") { resp in
-//                        guard let r = TestUtils.getResult(resp: resp) else {
-//                            done(); return;
-//                        }
-//
-//                        expect(r).toNot(beNil())
-//                        expect(r).toNot(beEmpty())
-//                        expect(r[0].cborMetadata).toNot(beEmpty())
-//                        done()
-//                    }
-//                }
-//            }
+            it("labels"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getTransactionMetadataLabels { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        done()
+                    }
+                }
+            }
+
+            it("txsLabelCbor"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getTransactionMetadataCborForLabel(label: "1968") { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r).toNot(beEmpty())
+                        expect(r[0].cborMetadata).toNot(beEmpty())
+                        done()
+                    }
+                }
+            }
 
             it("txsLabel"){
                 waitUntil(timeout: 3) { done in

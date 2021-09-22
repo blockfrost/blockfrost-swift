@@ -113,8 +113,9 @@ open class APIRequest {
 open class RequestBuilder<T> {
     var credential: URLCredential?
     var headers: [String: String]
+    var data: Data? = nil
     var config: BlockfrostConfig = BlockfrostConfig.shared()
-    
+
     public let parameters: [String: Any]?
     public let method: String
     public let URLString: String
@@ -124,11 +125,12 @@ open class RequestBuilder<T> {
     /// If you need to get the request's progress in older OS versions, please use Alamofire http client.
     public var onProgressReady: ((Progress) -> Void)?
 
-    required public init(method: String, URLString: String, parameters: [String: Any]?, headers: [String: String] = [:], config: BlockfrostConfig? = nil) {
+    required public init(method: String, URLString: String, parameters: [String: Any]?, headers: [String: String] = [:], data: Data? = nil, config: BlockfrostConfig? = nil) {
         self.method = method
         self.URLString = URLString
         self.parameters = parameters
         self.headers = headers
+        self.data = data
 
         if let cfg = config { self.config = cfg }
         addHeaders(self.config.customHeaders)

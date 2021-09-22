@@ -599,11 +599,12 @@ open class CardanoTransactionsAPI : BaseService {
      - parameter completion: completion handler to receive the result
      */
     open func submitTransaction(
-        contentType: ContentType_txSubmitPost,
+        transaction: Data,
+        contentType: ContentType_txSubmitPost = .applicationCbor,
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<String, Error>) -> Void
     ) -> APIRequest {
-        submitTransactionWithRequestBuilder(contentType: contentType)
+        submitTransactionWithRequestBuilder(transaction: transaction, contentType: contentType)
             .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
                 switch result {
                 case let .success(response):
@@ -624,7 +625,7 @@ open class CardanoTransactionsAPI : BaseService {
      - parameter contentType: (header)
      - returns: RequestBuilder<String>
      */
-    open func submitTransactionWithRequestBuilder(contentType: ContentType_txSubmitPost) -> RequestBuilder<String> {
+    open func submitTransactionWithRequestBuilder(transaction: Data, contentType: ContentType_txSubmitPost) -> RequestBuilder<String> {
         let localVariablePath = "/tx/submit"
         let localVariableURLString = config.basePath + localVariablePath
         let localVariableParameters: [String: Any]? = nil
@@ -639,6 +640,7 @@ open class CardanoTransactionsAPI : BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<String>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "POST", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "POST", URLString: localVariableUrlComponents?.string ?? localVariableURLString,
+                parameters: localVariableParameters, headers: localVariableHeaderParameters, data: transaction)
     }
 }

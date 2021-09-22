@@ -63,8 +63,8 @@ open class APIAlamoRequest : APIRequest {
 }
 
 open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
-    required public init(method: String, URLString: String, parameters: [String: Any]?, headers: [String: String] = [:], config: BlockfrostConfig? = nil) {
-        super.init(method: method, URLString: URLString, parameters: parameters, headers: headers, config: config)
+    required public init(method: String, URLString: String, parameters: [String: Any]?, headers: [String: String] = [:], data: Data? = nil, config: BlockfrostConfig? = nil) {
+        super.init(method: method, URLString: URLString, parameters: parameters, headers: headers, data: data, config: config)
     }
     
     /**
@@ -153,6 +153,8 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                 encoding = AlamoFormDataEncoding(contentTypeForFormPart: contentTypeForFormPart(fileURL:))
             } else if contentType == "application/x-www-form-urlencoded" {
                 encoding = AlamoFormURLEncoding()
+            } else if contentType == "application/cbor" {
+                encoding = AlamoURLEncoding()
             } else {
                 fatalError("Unsupported Media Type - \(contentType)")
             }
@@ -161,7 +163,17 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
         let fileKeys = parameters == nil ? [] : parameters!.filter { $1 is NSURL }
                                                            .map { $0.0 }
 
-        if fileKeys.count > 0 {
+        if let binaryData = data {
+            let request = manager.upload(binaryData, to: URLString, method: Alamofire.HTTPMethod(rawValue: xMethod.rawValue), headers: nil)
+            request.uploadProgress(queue: .main) { progress in
+                if let onProgressReady = self.onProgressReady {
+                    onProgressReady(progress)
+                }
+            }
+            processRequest(request: request, managerId, apiResponseQueue, completion)
+            return APIAlamoRequest(request: request, session: manager)
+
+        } else if fileKeys.count > 0 {
             let request = manager.upload(multipartFormData: { mpForm in
                 for (k, v) in self.parameters! {
                     switch v {
@@ -188,19 +200,6 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
             }
             processRequest(request: request, managerId, apiResponseQueue, completion)
             return APIAlamoRequest(request: request, session: manager)
-            
-            /*, encodingCompletion: { encodingResult in
-                    switch encodingResult {
-                    case .success(let upload, _, _):
-                        if let onProgressReady = self.onProgressReady {
-                            onProgressReady(upload.uploadProgress)
-                        }
-                        self.processRequest(request: upload, managerId, completion)
-                    case .failure(let encodingError):
-                        completion(nil, ErrorResponse.error(415, nil, encodingError))
-                    }
-                })
-            */
         } else {
             let request = makeRequest(manager: manager, method: xMethod, encoding: encoding, headers: nil)
             if let onProgressReady = self.onProgressReady {

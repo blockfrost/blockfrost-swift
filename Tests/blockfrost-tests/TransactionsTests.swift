@@ -268,6 +268,30 @@ final class TransactionsTests: QuickSpec {
                 }
             }
 
+            it("submit") {
+                let dummyTx = "33770d42c7bc8a9a0bc9830ffb97941574dc61dc534796dd8614b99b6aadace4".data(using: .ascii)!
+                waitUntil(timeout: 3) { done in
+                    let _ = api.submitTransaction(transaction: dummyTx) { resp in
+                        switch (resp) {
+                        case let .failure(err):
+                            expect(err).to(matchError(ErrorResponse.self))
+                            let respErr = err as! ErrorResponse
+                            if case let .errorStatus(scode, status, _, _) = respErr {
+                                expect(scode).to(equal(400))
+                                expect(status.statusCode).to(equal(400))
+                            } else {
+                                fail("Invalid error message")
+                            }
+                            break
+                        case .success(_):
+                            fail("Did not expect to succeed")
+                            break
+                        }
+                        done()
+                    }
+                }
+            }
+
             
         }
     }

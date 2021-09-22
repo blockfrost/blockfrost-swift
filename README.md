@@ -96,6 +96,9 @@ For more information, please visit [https://blockfrost.io](https://blockfrost.io
 API uses a simple completion callbacks, returning `Swift.Result<R, Error>`, where `R` is defined by the particular API call. 
 
 ```swift
+// import the SDK on the beginning of the file
+import BlockfrostSwiftSDK
+
 // define project-wide settings
 BlockfrostStaticConfig.basePath = "https://cardano-mainnet.blockfrost.io/api/v0"  // or leave default
 BlockfrostStaticConfig.projectId = "your-project-id"

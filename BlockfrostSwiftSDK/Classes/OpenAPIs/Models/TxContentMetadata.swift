@@ -14,9 +14,9 @@ public final class TxContentMetadata: Codable, Hashable {
     /** Metadata label */
     public var label: String
     /** Content of the metadata */
-    public var jsonMetadata: [String:AnyCodable?]
+    public var jsonMetadata: [String:AnyCodable]
 
-    public init(label: String, jsonMetadata: [String:AnyCodable?]) {
+    public init(label: String, jsonMetadata: [String:AnyCodable]) {
         self.label = label
         self.jsonMetadata = jsonMetadata
     }
@@ -36,7 +36,8 @@ public final class TxContentMetadata: Codable, Hashable {
 
     public static func == (lhs: TxContentMetadata, rhs: TxContentMetadata) -> Bool {
         lhs.label == rhs.label &&
-            lhs.jsonMetadata == rhs.jsonMetadata
+            CodableHelper.codableHashEqual(lhs.jsonMetadata, rhs.jsonMetadata) &&
+            CodableHelper.codableDeepEqual(lhs.jsonMetadata, rhs.jsonMetadata)
     }
 
     public func hash(into hasher: inout Hasher) {

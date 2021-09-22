@@ -54,6 +54,7 @@ class AddressesTests: QuickSpec {
                     }
                 }
             }
+
             it("utxos") {
                 waitUntil(timeout: 10) { done in
                     _ = api.getAddressUtxos(address: "addr1q8zu4smzyf2r2mfqjd6tc6vxf2p8rccdfk82ye3eut2udkw9etpkygj5x4kjpym5h35cvj5zw83s6nvw5fnrnck4cmvshkfm4y") { resp in
@@ -67,6 +68,18 @@ class AddressesTests: QuickSpec {
                 }
             }
 
+            it("txs"){
+                waitUntil(timeout: 10) { done in
+                    let _ = api.getAddressTransactions(address: "addr1q8zu4smzyf2r2mfqjd6tc6vxf2p8rccdfk82ye3eut2udkw9etpkygj5x4kjpym5h35cvj5zw83s6nvw5fnrnck4cmvshkfm4y") { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+                        expect(r).toNot(beNil())
+                        expect(r).toNot(beEmpty())
+                        done()
+                    }
+                }
+            }
         }
     }
 

@@ -17,8 +17,8 @@ open class IPFSAddAPI: BaseService {
      - parameter apiResponseQueue: The queue on which api response is dispatched.
      - parameter completion: completion handler to receive the result
      */
-    open func add(apiResponseQueue: DispatchQueue? = nil, completion: @escaping (_ result: Swift.Result<IPFSObject, Error>) -> Void) -> APIRequest {
-        addWithRequestBuilder()
+    open func add(file: URL, apiResponseQueue: DispatchQueue? = nil, completion: @escaping (_ result: Swift.Result<IPFSObject, Error>) -> Void) -> APIRequest {
+        addWithRequestBuilder(file: file)
             .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
                 switch result {
                 case let .success(response):
@@ -38,10 +38,10 @@ open class IPFSAddAPI: BaseService {
        - name: ApiKeyAuth
      - returns: RequestBuilder<IPFSObject>
      */
-    open func addWithRequestBuilder() -> RequestBuilder<IPFSObject> {
+    open func addWithRequestBuilder(file: URL) -> RequestBuilder<IPFSObject> {
         let localVariablePath = "/ipfs/add"
         let localVariableURLString = config.basePath + localVariablePath
-        let localVariableParameters: [String: Any]? = nil
+        let localVariableParameters: [String: Any]? = ["file": file]
 
         let localVariableUrlComponents = URLComponents(string: localVariableURLString)
 

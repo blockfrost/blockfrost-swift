@@ -324,57 +324,57 @@ open class CardanoPoolsAPI: BaseService {
         return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
     }
 
-//    /**
-//     Stake pool metadata
-//
-//     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
-//     - parameter apiResponseQueue: The queue on which api response is dispatched.
-//     - parameter completion: completion handler to receive the result
-//     */
-//    open func getPoolMetadata(
-//        poolId: String,
-//        apiResponseQueue: DispatchQueue? = nil,
-//        completion: @escaping (_ result: Swift.Result<AnyOfpoolMetadataobject, Error>) -> Void
-//    ) -> APIRequest {
-//        getPoolMetadataWithRequestBuilder(poolId: poolId)
-//            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-//                switch result {
-//                case let .success(response):
-//                    completion(.success(response.body!))
-//                case let .failure(error):
-//                    completion(.failure(error))
-//                }
-//            }
-//    }
-//
-//    /**
-//     Stake pool metadata
-//     - GET /pools/{pool_id}/metadata
-//     - Stake pool registration metadata.
-//     - API Key:
-//       - type: apiKey project_id
-//       - name: ApiKeyAuth
-//     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
-//     - returns: RequestBuilder<AnyOfpoolMetadataobject>
-//     */
-//    open func getPoolMetadataWithRequestBuilder(poolId: String) -> RequestBuilder<AnyOfpoolMetadataobject> {
-//        var localVariablePath = "/pools/{pool_id}/metadata"
-//        let poolIdPreEscape = "\(APIHelper.mapValueToPathItem(poolId))"
-//        let poolIdPostEscape = poolIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-//        localVariablePath = localVariablePath.replacingOccurrences(of: "{pool_id}", with: poolIdPostEscape, options: .literal, range: nil)
-//        let localVariableURLString = config.basePath + localVariablePath
-//        let localVariableParameters: [String: Any]? = nil
-//
-//        let localVariableUrlComponents = URLComponents(string: localVariableURLString)
-//
-//        let localVariableNillableHeaders: [String: Any?] = [:]
-//
-//        let localVariableHeaderParameters = APIHelper.rejectNilHeaders(localVariableNillableHeaders)
-//
-//        let localVariableRequestBuilder: RequestBuilder<AnyOfpoolMetadataobject>.Type = config.requestBuilderFactory.getBuilder()
-//
-//        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
-//    }
+    /**
+     Stake pool metadata
+
+     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter completion: completion handler to receive the result
+     */
+    open func getPoolMetadata(
+        poolId: String,
+        apiResponseQueue: DispatchQueue? = nil,
+        completion: @escaping (_ result: Swift.Result<PoolMetadata?, Error>) -> Void
+    ) -> APIRequest {
+        getPoolMetadataWithRequestBuilder(poolId: poolId)
+            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
+                switch result {
+                case let .success(response):
+                    completion(.success(response.body!))
+                case let .failure(error):
+                    completion(.failure(error))
+                }
+            }
+    }
+
+    /**
+     Stake pool metadata
+     - GET /pools/{pool_id}/metadata
+     - Stake pool registration metadata.
+     - API Key:
+       - type: apiKey project_id
+       - name: ApiKeyAuth
+     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
+     - returns: RequestBuilder<PoolMetadata?>
+     */
+    open func getPoolMetadataWithRequestBuilder(poolId: String) -> RequestBuilder<PoolMetadata?> {
+        var localVariablePath = "/pools/{pool_id}/metadata"
+        let poolIdPreEscape = "\(APIHelper.mapValueToPathItem(poolId))"
+        let poolIdPostEscape = poolIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        localVariablePath = localVariablePath.replacingOccurrences(of: "{pool_id}", with: poolIdPostEscape, options: .literal, range: nil)
+        let localVariableURLString = config.basePath + localVariablePath
+        let localVariableParameters: [String: Any]? = nil
+
+        let localVariableUrlComponents = URLComponents(string: localVariableURLString)
+
+        let localVariableNillableHeaders: [String: Any?] = [:]
+
+        let localVariableHeaderParameters = APIHelper.rejectNilHeaders(localVariableNillableHeaders)
+
+        let localVariableRequestBuilder: RequestBuilder<PoolMetadata?>.Type = config.requestBuilderFactory.getBuilder()
+
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+    }
 
     /**
      Stake pool relays

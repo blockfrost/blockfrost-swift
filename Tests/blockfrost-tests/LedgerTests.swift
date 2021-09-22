@@ -26,7 +26,7 @@ final class LedgerTests: QuickSpec {
 
         describe("ledger") {
             it("genesis"){
-                waitUntil(timeout: 3) { done in
+                waitUntil(timeout: 10) { done in
                     let _ = api.getGenesis { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

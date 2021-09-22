@@ -42,7 +42,7 @@ final class PageLoaderBlocksTests: QuickSpec {
 
             beforeSuite {
                 // Load latest block on the chain
-                waitUntil(timeout: 3) { done in
+                waitUntil(timeout: 10) { done in
                     let _ = api.getLatestBlock { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

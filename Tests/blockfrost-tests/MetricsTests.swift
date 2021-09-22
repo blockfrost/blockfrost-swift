@@ -26,7 +26,7 @@ final class MetricsTests: QuickSpec {
 
         describe("metrics") {
             it("get"){
-                waitUntil(timeout: 3) { done in
+                waitUntil(timeout: 10) { done in
                     let _ = api.getMetrics { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -39,7 +39,7 @@ final class MetricsTests: QuickSpec {
             }
 
             it("endpoints"){
-                waitUntil(timeout: 3) { done in
+                waitUntil(timeout: 10) { done in
                     let _ = api.getMetricsEndpoints { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

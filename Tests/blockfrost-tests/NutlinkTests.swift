@@ -29,7 +29,7 @@ final class NutlinkTests: QuickSpec {
 
         describe("nutlink") {
             it("address"){
-                waitUntil(timeout: 3) { done in
+                waitUntil(timeout: 10) { done in
                     let _ = api.getAddress(address: "addr1q85yx2w7ragn5sx6umgmtjpc3865s9sg59sz4rrh6f90kgwfwlzu3w8ttacqg89mkdgwshwnplj5c5n9f8dhp0h55q2q7qm63t") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -56,7 +56,7 @@ final class NutlinkTests: QuickSpec {
             }
 
             it("addressTickers"){
-                waitUntil(timeout: 3) { done in
+                waitUntil(timeout: 10) { done in
                     let _ = api.getAddressTickers(address: "addr1q85yx2w7ragn5sx6umgmtjpc3865s9sg59sz4rrh6f90kgwfwlzu3w8ttacqg89mkdgwshwnplj5c5n9f8dhp0h55q2q7qm63t", count: 3) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -75,7 +75,7 @@ final class NutlinkTests: QuickSpec {
             }
 
             it("addressTickersAll"){
-                waitUntil(timeout: 3) { done in
+                waitUntil(timeout: 10) { done in
                     let _ = api.getAddressTickersAll(address: "addr1q85yx2w7ragn5sx6umgmtjpc3865s9sg59sz4rrh6f90kgwfwlzu3w8ttacqg89mkdgwshwnplj5c5n9f8dhp0h55q2q7qm63t") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -89,7 +89,7 @@ final class NutlinkTests: QuickSpec {
             }
 
             it("addressTickersByTicker_page2count2"){
-                waitUntil(timeout: 3) { done in
+                waitUntil(timeout: 10) { done in
                     let _ = api.getTickerRecordsByAddressAndTicker(
                             address: "addr1q85yx2w7ragn5sx6umgmtjpc3865s9sg59sz4rrh6f90kgwfwlzu3w8ttacqg89mkdgwshwnplj5c5n9f8dhp0h55q2q7qm63t",
                             ticker: "ADAUSD", count: 2, page: 2) { resp in
@@ -124,7 +124,7 @@ final class NutlinkTests: QuickSpec {
             }
 
             it("tickers_page2_count2"){
-                waitUntil(timeout: 3) { done in
+                waitUntil(timeout: 10) { done in
                     let _ = api.getTickerRecordsByTicker(ticker: "ADAUSD", count: 2, page: 2) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

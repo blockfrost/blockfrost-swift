@@ -50,6 +50,38 @@ final class BlockTests: QuickSpec {
                 }
             }
 
+            it("slot"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getBlockInSlot(slotNumber: 1) { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r.height).to(equal(2))
+                        expect(r.slot).to(equal(1))
+                        done()
+                    }
+                }
+            }
+
+            it("epochSlot"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getBlockInEpochInSlot(epochNumber: 0, slotNumber: 1031) { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r.height).to(equal(1032))
+                        expect(r.slot).to(equal(1031))
+                        expect(r.epoch).to(equal(0))
+                        expect(r.epochSlot).to(equal(1031))
+                        done()
+                    }
+                }
+            }
+
             it("getLatestTxs"){
                 waitUntil(timeout: 3) { done in
                     let _ = api.getTransactionsInLatestBlock() { resp in

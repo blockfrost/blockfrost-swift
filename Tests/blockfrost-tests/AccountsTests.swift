@@ -12,7 +12,6 @@ import Nimble
 class AccountsTests: QuickSpec {
     override func spec() {
         describe("load accounts") {
-            var config = BlockfrostConfig()
             var api: CardanoAccountsAPI!
 
             beforeEach {
@@ -20,7 +19,6 @@ class AccountsTests: QuickSpec {
                 if cfg == nil {
                     fail("Project ID is not defined, use env var BF_PROJECT_ID")
                 }
-                config = cfg!
                 api = CardanoAccountsAPI(config: cfg)
             }
 

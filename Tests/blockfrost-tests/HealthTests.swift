@@ -25,6 +25,20 @@ final class HealthTests: QuickSpec {
         }
 
         describe("health") {
+            it("root"){
+                waitUntil(timeout: 3) { done in
+                    let _ = api.getApiRoot { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r.url).to(equal("https://blockfrost.io/"))
+                        done()
+                    }
+                }
+            }
+
             it("getHealth"){
                 waitUntil(timeout: 3) { done in
                     let _ = api.getHealth { resp in

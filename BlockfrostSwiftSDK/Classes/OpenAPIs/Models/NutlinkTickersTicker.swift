@@ -54,7 +54,7 @@ public final class NutlinkTickersTicker: Codable, Hashable {
             lhs.txHash == rhs.txHash &&
             lhs.blockHeight == rhs.blockHeight &&
             lhs.txIndex == rhs.txIndex &&
-            lhs.payload == rhs.payload
+            CodableHelper.eqAny(lhs.payload, rhs.payload)
     }
 
     public func hash(into hasher: inout Hasher) {

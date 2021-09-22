@@ -48,7 +48,7 @@ public final class NutlinkAddress: Codable, Hashable {
         lhs.address == rhs.address &&
             lhs.metadataUrl == rhs.metadataUrl &&
             lhs.metadataHash == rhs.metadataHash &&
-            lhs.metadata == rhs.metadata
+            CodableHelper.eqAny(lhs.metadata, rhs.metadata)
     }
 
     public func hash(into hasher: inout Hasher) {

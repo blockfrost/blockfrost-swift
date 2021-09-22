@@ -76,7 +76,7 @@ public final class Asset: Codable, Hashable {
             lhs.quantity == rhs.quantity &&
             lhs.initialMintTxHash == rhs.initialMintTxHash &&
             lhs.mintOrBurnCount == rhs.mintOrBurnCount &&
-            lhs.onchainMetadata == rhs.onchainMetadata &&
+            CodableHelper.eqAny(lhs.onchainMetadata, rhs.onchainMetadata) &&
             lhs.metadata == rhs.metadata
     }
 

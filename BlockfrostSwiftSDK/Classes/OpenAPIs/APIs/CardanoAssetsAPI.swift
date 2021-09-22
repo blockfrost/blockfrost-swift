@@ -425,7 +425,7 @@ open class CardanoAssetsAPI: BaseService {
     open func getAssets(
         count: Int? = nil, page: Int? = nil, order: SortOrder? = nil,
         apiResponseQueue: DispatchQueue? = nil,
-        completion: @escaping (_ result: Swift.Result<[Asset], Error>) -> Void
+        completion: @escaping (_ result: Swift.Result<[AssetRecord], Error>) -> Void
     ) -> APIRequest {
         getAssetsWithRequestBuilder(count: count, page: page, order: order)
             .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
@@ -450,9 +450,9 @@ open class CardanoAssetsAPI: BaseService {
         order: SortOrder? = nil,
         apiResponseQueue: DispatchQueue? = nil,
         batchSize: Int? = nil,
-        completion: @escaping (_ result: Swift.Result<[Asset], Error>) -> Void
+        completion: @escaping (_ result: Swift.Result<[AssetRecord], Error>) -> Void
     ) -> APIRequest {
-        let loader = PageLoader<Asset>(batchSize: batchSize ?? config.batchSize)
+        let loader = PageLoader<AssetRecord>(batchSize: batchSize ?? config.batchSize)
         loader.loadAll({ count, page, compl in
             _ = self.getAssets(count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
         }, completion: { compl in
@@ -473,7 +473,7 @@ open class CardanoAssetsAPI: BaseService {
      - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
      - returns: RequestBuilder<[Asset]>
      */
-    open func getAssetsWithRequestBuilder(count: Int? = nil, page: Int? = nil, order: SortOrder? = nil) -> RequestBuilder<[Asset]> {
+    open func getAssetsWithRequestBuilder(count: Int? = nil, page: Int? = nil, order: SortOrder? = nil) -> RequestBuilder<[AssetRecord]> {
         let localVariablePath = "/assets"
         let localVariableURLString = config.basePath + localVariablePath
         let localVariableParameters: [String: Any]? = nil
@@ -489,7 +489,7 @@ open class CardanoAssetsAPI: BaseService {
 
         let localVariableHeaderParameters = APIHelper.rejectNilHeaders(localVariableNillableHeaders)
 
-        let localVariableRequestBuilder: RequestBuilder<[Asset]>.Type = config.requestBuilderFactory.getBuilder()
+        let localVariableRequestBuilder: RequestBuilder<[AssetRecord]>.Type = config.requestBuilderFactory.getBuilder()
 
         return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
     }

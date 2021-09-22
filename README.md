@@ -1,4 +1,5 @@
 # Swift5 API client for Blockfrost
+![CI badge](https://github.com/blockfrost/blockfrost-swift/actions/workflows/test.yml/badge.svg)
 
 Blockfrost is an API as a service that allows users to interact with the Cardano blockchain and parts of its ecosystem.
       

@@ -5,6 +5,8 @@
 import Foundation
 import Combine
 
+public typealias PageLoader = DispatchPageLoader
+
 open class PageLoaderCancelled : Error {
 }
 
@@ -161,7 +163,7 @@ open class DispatchPageLoader<T> {
 /**
  * PageLoader based on Combine framework
  */
-open class PageLoader<T> {
+open class CombinePageLoader<T> {
     public enum LoaderEvent {
         case started
         case pageLoaded(page: (Int, [T]))
@@ -186,7 +188,6 @@ open class PageLoader<T> {
     var acc: [T] = []
     var subscription = Set<AnyCancellable>()
     var subscriptionPageLoader: AnyCancellable? = nil
-    var subscriptionPageProcessor: AnyCancellable? = nil
 
     var numPages = Atomic<Int>(0)
     var loader: LoaderType? = nil
@@ -211,7 +212,6 @@ open class PageLoader<T> {
             $0.cancel()
         }
         subscriptionPageLoader?.cancel()
-        subscriptionPageProcessor?.cancel()
     }
 
     open func stop(){
@@ -319,7 +319,7 @@ open class PageLoader<T> {
                 break
             }
         }, receiveValue: { futs in
-            self.subscriptionPageProcessor = Publishers.MergeMany(futs)
+            Publishers.MergeMany(futs)
                 .collect()
                 .sort { a, b in a.0 < b.0 }
                 .handleEvents(receiveCancel: { [weak self] in
@@ -338,9 +338,8 @@ open class PageLoader<T> {
                         return
                     }
                     sself.recvValue(res)
-                })
-                //.store(in: &self.subscription)
-        })//.store(in: &subscription)
+                }).store(in: &self.subscription)
+        })
         
         return resSubj.handleEvents(receiveCancel: {
             self.cancel()

@@ -286,9 +286,9 @@ final class BlockTests: QuickSpec {
     func fixtureCombineLoader(api: CardanoBlocksAPI,
                               blockToLoad: String, onCancelled: (()->())? = nil,
                               pageFail: Int? = nil, pageCancel: Int? = nil, cancelBlock: (()->())? = nil
-    ) -> AnyPublisher<PageLoader<BlockContent>.LoaderEvent, Error> {
-        let loader = PageLoader<BlockContent>()
-        var subs: AnyPublisher<PageLoader<BlockContent>.LoaderEvent, Error>
+    ) -> AnyPublisher<CombinePageLoader<BlockContent>.LoaderEvent, Error> {
+        let loader = CombinePageLoader<BlockContent>()
+        var subs: AnyPublisher<CombinePageLoader<BlockContent>.LoaderEvent, Error>
         subs = loader.load({ (count, page, compl) in
             if pageFail != nil && page == pageFail {
                 compl(.failure(NSError(domain: "PlannedFailure", code: 0)))

@@ -41,7 +41,6 @@ final class BlockTests: QuickSpec {
                         expect(r).toNot(beNil())
                         expect(r.height).to(beGreaterThanOrEqualTo(6276800))
                         expect(r.time).to(beGreaterThanOrEqualTo(1632309616))
-                        expect(r.slot).to(beGreaterThanOrEqualTo(40743325))
                         expect(r.epoch).to(beGreaterThanOrEqualTo(291))
                         expect(r.hash).to(beAKindOf(String.self))
                         done()

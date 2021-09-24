@@ -75,6 +75,7 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
     open func createSessionManager(rootQueue: DispatchQueue? = nil) -> Alamofire.Session {
         let configuration = URLSessionConfiguration.default
         configuration.httpAdditionalHeaders = buildHeaders()
+        configuration.headers.add(.userAgent("\(BlockfrostConfig.USER_AGENT)-\(BuildInfo.VERSION)"))
         let queue = rootQueue ?? DispatchQueue(label: "org.alamofire.session.rootQueue")
         return Alamofire.Session(configuration: configuration, rootQueue: queue, interceptor: config.retryPolicy)
     }

@@ -11,6 +11,7 @@ import Alamofire
 //public typealias OpenAPIClientAPI = BlockfrostSDK
 
 open class BlockfrostConfig {
+    public static let USER_AGENT = "BlockfrostSwiftSDK"
     public static let URL_MAINNET = "https://cardano-mainnet.blockfrost.io/api/v0"
     public static let URL_TESTNET = "https://cardano-testnet.blockfrost.io/api/v0"
     public static let URL_IPFS = "https://ipfs.blockfrost.io/api/v0"

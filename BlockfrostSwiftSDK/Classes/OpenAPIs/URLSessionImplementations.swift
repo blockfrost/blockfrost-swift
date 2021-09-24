@@ -58,6 +58,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
     open func createURLSession() -> URLSession {
         let configuration = URLSessionConfiguration.default
         configuration.httpAdditionalHeaders = buildHeaders()
+        configuration.headers.add(.userAgent("\(BlockfrostConfig.USER_AGENT)-\(BuildInfo.VERSION)"))
         let sessionDelegate = SessionDelegate()
         sessionDelegate.credential = credential
         sessionDelegate.taskDidReceiveChallenge = taskDidReceiveChallenge

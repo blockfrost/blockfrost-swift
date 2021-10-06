@@ -29,16 +29,18 @@ open class BlockfrostConfig {
     //public var requestBuilderFactory: RequestBuilderFactory = URLSessionRequestBuilderFactory()
     public var apiResponseQueue: DispatchQueue = .main
     public var batchSize: Int = DEFAULT_BATCH_SIZE
+    public var timeout: TimeInterval? = nil
 
     // Alamofire dependent
     public var retryPolicy: RetryPolicy? = BlockfrostRetryPolicy()
 
-    public init(basePath: String? = nil, projectId: String? = nil, apiResponseQueue: DispatchQueue? = nil, batchSize: Int? = nil, retryPolicy: RetryPolicy? = nil) {
+    public init(basePath: String? = nil, projectId: String? = nil, apiResponseQueue: DispatchQueue? = nil, batchSize: Int? = nil, retryPolicy: RetryPolicy? = nil, timeout: TimeInterval? = nil) {
         if let x = basePath { self.basePath = x }
         if let x = projectId { self.projectId = x }
         if let x = apiResponseQueue { self.apiResponseQueue = x }
         if let x = batchSize { self.batchSize = x }
         if let x = retryPolicy { self.retryPolicy = x }
+        if let x = timeout { self.timeout = x }
     }
 
     private static var sharedInstance: BlockfrostConfig = {

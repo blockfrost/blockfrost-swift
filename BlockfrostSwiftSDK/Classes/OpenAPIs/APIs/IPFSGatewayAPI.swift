@@ -25,13 +25,13 @@ open class IPFSGatewayAPI: BaseService {
     open func callGet(
         iPFSPath: String,
         apiResponseQueue: DispatchQueue? = nil,
-        completion: @escaping (_ result: Swift.Result<Void, Error>) -> Void
+        completion: @escaping (_ result: Swift.Result<Data, Error>) -> Void
     ) -> APIRequest {
         callGetWithRequestBuilder(iPFSPath: iPFSPath)
             .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
                 switch result {
-                case .success:
-                    completion(.success(()))
+                case let .success(response):
+                    completion(.success(response.body!))
                 case let .failure(error):
                     completion(.failure(error))
                 }
@@ -48,7 +48,7 @@ open class IPFSGatewayAPI: BaseService {
      - parameter iPFSPath: (path)
      - returns: RequestBuilder<Void>
      */
-    open func callGetWithRequestBuilder(iPFSPath: String) -> RequestBuilder<Void> {
+    open func callGetWithRequestBuilder(iPFSPath: String) -> RequestBuilder<Data> {
         var localVariablePath = "/ipfs/gateway/{IPFS_path}"
         let iPFSPathPreEscape = "\(APIHelper.mapValueToPathItem(iPFSPath))"
         let iPFSPathPostEscape = iPFSPathPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
@@ -62,7 +62,7 @@ open class IPFSGatewayAPI: BaseService {
 
         let localVariableHeaderParameters = APIHelper.rejectNilHeaders(localVariableNillableHeaders)
 
-        let localVariableRequestBuilder: RequestBuilder<Void>.Type = config.requestBuilderFactory.getNonDecodableBuilder()
+        let localVariableRequestBuilder: RequestBuilder<Data>.Type = config.requestBuilderFactory.getNonDecodableBuilder()
 
         return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
     }

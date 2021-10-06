@@ -19,6 +19,7 @@ final class IPFSTests: QuickSpec {
     override func spec() {
         var apiAdd: IPFSAddAPI!
         var apiPin: IPFSPinsAPI!
+        var apiGw: IPFSGatewayAPI!
 
         beforeEach {
             let cfg = TestUtils.initConfig(ipfs: true)
@@ -27,6 +28,7 @@ final class IPFSTests: QuickSpec {
             }
             apiAdd = IPFSAddAPI(config: cfg)
             apiPin = IPFSPinsAPI(config: cfg)
+            apiGw = IPFSGatewayAPI(config: cfg)
         }
 
         describe("ipfs-add") {
@@ -38,7 +40,7 @@ final class IPFSTests: QuickSpec {
                 let fileUrl = URL(fileURLWithPath: path)
                 var ipfsHash: String!
 
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: 90) { done in
                     let _ = apiAdd.add(file: fileUrl) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -53,7 +55,7 @@ final class IPFSTests: QuickSpec {
                     }
                 }
 
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: 90) { done in
                     let _ = apiPin.pinAdd(iPFSPath: ipfsHash) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -74,6 +76,23 @@ final class IPFSTests: QuickSpec {
                         expect(r).toNot(beNil())
                         expect(r).toNot(beEmpty())
                         expect(r).to(containElementSatisfying { el in el.ipfsHash == "QmUCXMTcvuJpwHF3gABRr69ceQR2uEG2Fsik9CyWh8MUoQ" })
+                        done()
+                    }
+                }
+
+                waitUntil(timeout: 15) { done in
+                    guard let idata = try? Data(contentsOf: fileUrl) else {
+                        fail("Could not read input file")
+                        return
+                    }
+                    
+                    let _ = apiGw.callGet(iPFSPath: "QmUCXMTcvuJpwHF3gABRr69ceQR2uEG2Fsik9CyWh8MUoQ") { resp in
+                        guard let r = TestUtils.getResult(resp: resp) else {
+                            done(); return;
+                        }
+
+                        expect(r).toNot(beNil())
+                        expect(r).to(equal(idata))
                         done()
                     }
                 }

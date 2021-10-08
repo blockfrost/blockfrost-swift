@@ -43,8 +43,13 @@ github "blockfrost/blockfrost-swift" ~> 0.0.5
          
 Minimal pod version: 1.10+
 Run `pod install`
+       
+Podfile:
+```
+pod 'BlockfrostSwiftSDK', '~> 0.0.5'
+```
 
-Podfile by tag:
+Or use GitHub, by tag:
 ```
 pod 'BlockfrostSwiftSDK', :git => 'https://github.com/blockfrost/blockfrost-swift.git', :tag => '0.0.5'
 ```
@@ -326,7 +331,7 @@ pod spec lint --no-clean --verbose --use-modular-headers --use-libraries --allow
 Publishing new version:
 
 ```bash
-pod trunk push BlockfrostSwiftSDK.podspec --verbose  
+pod trunk push BlockfrostSwiftSDK.podspec --verbose --allow-warnings 
 ```
 
 Note that this pod requires CocoaPod 1.10+. 

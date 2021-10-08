@@ -15,6 +15,21 @@
 
 ## Installation
 
+### Swift package manager
+```
+dependencies: [
+    .package(url: "https://github.com/blockfrost/blockfrost-swift.git", from: "0.0.1"),
+],
+
+targets: [
+    .executableTarget(
+        name: "Example",
+        dependencies: [
+            .product(name: "BlockfrostSwiftSDK", package: "blockfrost-swift"),
+        ]),
+]
+```
+
 ### Carthage
 
 Run `carthage update`
@@ -22,6 +37,16 @@ Run `carthage update`
 ### CocoaPods
 
 Run `pod install`
+
+Podfile by tag:
+```
+pod 'BlockfrostSwiftSDK', :git => 'https://github.com/blockfrost/blockfrost-swift.git', :tag => '0.0.4'
+```
+
+or by branch:
+```
+pod 'BlockfrostSwiftSDK', :git => 'https://github.com/blockfrost/blockfrost-swift.git', :branch => 'master'
+```
 
 ## Usage
       

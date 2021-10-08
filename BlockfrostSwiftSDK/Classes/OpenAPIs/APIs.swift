@@ -25,14 +25,14 @@ open class BlockfrostConfig {
     public var customHeaders: [String: String] = [:]
     public var credential: URLCredential?
     public var projectId: String?
-    public var requestBuilderFactory: RequestBuilderFactory = AlamofireRequestBuilderFactory()
-    //public var requestBuilderFactory: RequestBuilderFactory = URLSessionRequestBuilderFactory()
+    public var requestBuilderFactory: RequestBuilderFactory = AlamofireRequestBuilderFactory()  // URLSessionRequestBuilderFactory() is not supported
     public var apiResponseQueue: DispatchQueue = .main
     public var batchSize: Int = DEFAULT_BATCH_SIZE
     public var timeout: TimeInterval? = nil
 
     // Alamofire dependent
     public var retryPolicy: RetryPolicy? = BlockfrostRetryPolicy()
+    public var urlSessionConfigurationModifier: ((URLSessionConfiguration)->())? = nil
 
     public init(basePath: String? = nil, projectId: String? = nil, apiResponseQueue: DispatchQueue? = nil, batchSize: Int? = nil, retryPolicy: RetryPolicy? = nil, timeout: TimeInterval? = nil) {
         if let x = basePath { self.basePath = x }

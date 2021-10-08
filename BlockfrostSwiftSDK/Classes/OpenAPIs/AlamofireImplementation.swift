@@ -79,6 +79,9 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
         if let timeout = config.timeout {
             configuration.timeoutIntervalForRequest = timeout
         }
+        if let cfgModifier = config.urlSessionConfigurationModifier {
+            cfgModifier(configuration)
+        }
         let queue = rootQueue ?? DispatchQueue(label: "org.alamofire.session.rootQueue")
         return Alamofire.Session(configuration: configuration, rootQueue: queue, interceptor: config.retryPolicy)
     }

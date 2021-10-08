@@ -34,6 +34,11 @@ targets: [
 
 Run `carthage update`
 
+Cartfile
+```
+github "blockfrost/blockfrost-swift" ~> 0.0.4
+```
+
 ### CocoaPods
 
 Run `pod install`
@@ -101,6 +106,57 @@ config.retryPolicy = BlockfrostRetryPolicy(retryLimit: 10)    // specify custom 
 let ipfsAdd = apiAdd = IPFSAddAPI(config: cfg)
 ```
 
+Check out [Example application](Example) or [integration tests](Tests/blockfrost-tests/) for more usage examples.
+      
+### Fetch All methods
+Methods with paging parameters (count, page, order) have paging methods enabling to load all results, iterating over all pages in the background.
+The method returns list of all results once all pages have been downloaded.
+
+```swift
+let _ = api.getAssetHistoryAll(asset: "d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a07370616365636f696e73") { resp in
+    switch (resp) {
+    case let .failure(err):
+        // TODO: handle error here, `err` contains the error 
+        break
+    case let .success(r):
+        // `r` contains result of the call, here, it is of type `AddressContentTotal`
+        break
+    }
+}
+```
+
+### Advanced Fetch all
+To use more advanced load-all-pages technique, you can use [PageLoader](BlockfrostSwiftSDK/Classes/OpenAPIs/PageLoader.swift) class.               
+
+```swift
+let loader = PageLoader<AssetHistory>(batchSize: 10)
+loader.loadAll({ count, page, compl in
+    // PageLoader uses lambda to load particular page
+    _ = api.getAssetHistory(asset: asset, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+}, completion: { compl in
+    // Completion handler once all pages are loaded
+    // TODO: handle the results
+})
+```
+   
+You can handle event handler to get new page results as they are loaded:
+```swift
+loader.progressHandler = { event in
+    switch(event){
+    case .started: break
+    case let .pageLoaded(page):
+        print(page)  // new page loaded, type: (Int, [T]) ~ page ID and list of results               
+        break
+    case .completed(_):
+        break
+    }
+}
+```
+                                                
+You can also cancel further loading:
+```swift
+DispatchQueue.global().async { loader.cancel() }
+```
 
 ## API Endpoints
 

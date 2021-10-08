@@ -95,7 +95,7 @@ open class CardanoMetadataAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<[TxMetadataLabelCbor]>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 
     /**
@@ -182,7 +182,7 @@ open class CardanoMetadataAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<[TxMetadataLabelJson]>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 
     /**
@@ -263,6 +263,6 @@ open class CardanoMetadataAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<[TxMetadataLabel]>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 }

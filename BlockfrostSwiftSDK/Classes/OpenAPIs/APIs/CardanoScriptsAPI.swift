@@ -60,7 +60,7 @@ open class CardanoScriptsAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<Script>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 
     /**
@@ -147,7 +147,7 @@ open class CardanoScriptsAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<[ScriptRedeemer]>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 
     /**
@@ -228,6 +228,6 @@ open class CardanoScriptsAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<[Script]>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 }

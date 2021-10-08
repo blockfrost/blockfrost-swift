@@ -51,6 +51,6 @@ open class CardanoLedgerAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<GenesisContent>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 }

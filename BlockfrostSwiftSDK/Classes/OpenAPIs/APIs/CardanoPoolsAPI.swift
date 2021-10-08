@@ -60,7 +60,7 @@ open class CardanoPoolsAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<Pool>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 
     /**
@@ -147,7 +147,7 @@ open class CardanoPoolsAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<[String]>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 
     /**
@@ -234,7 +234,7 @@ open class CardanoPoolsAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<[PoolDelegator]>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 
     /**
@@ -321,7 +321,7 @@ open class CardanoPoolsAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<[PoolHistory]>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 
     /**
@@ -373,7 +373,7 @@ open class CardanoPoolsAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<PoolMetadata?>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 
     /**
@@ -425,7 +425,7 @@ open class CardanoPoolsAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<[PoolRelay]>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 
     /**
@@ -512,7 +512,7 @@ open class CardanoPoolsAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<[PoolUpdate]>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 
     /**
@@ -593,7 +593,7 @@ open class CardanoPoolsAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<[String]>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 
     /**
@@ -674,7 +674,7 @@ open class CardanoPoolsAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<[PoolListRetire]>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 
     /**
@@ -755,6 +755,6 @@ open class CardanoPoolsAPI: BaseService {
 
         let localVariableRequestBuilder: RequestBuilder<[PoolListRetire]>.Type = config.requestBuilderFactory.getBuilder()
 
-        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters)
+        return localVariableRequestBuilder.init(method: "GET", URLString: localVariableUrlComponents?.string ?? localVariableURLString, parameters: localVariableParameters, headers: localVariableHeaderParameters, config: self.config)
     }
 }

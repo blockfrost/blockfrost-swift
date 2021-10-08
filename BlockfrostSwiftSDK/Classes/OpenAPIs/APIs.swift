@@ -68,11 +68,11 @@ open class BlockfrostConfig {
     }
 
     public class func testnetDefault() -> BlockfrostConfig {
-        sharedInstanceMainnet
+        sharedInstanceTestnet
     }
 
     public class func mainnetDefault() -> BlockfrostConfig {
-        sharedInstanceTestnet
+        sharedInstanceMainnet
     }
 
     public class func ipfsDefault() -> BlockfrostConfig {
@@ -88,6 +88,7 @@ open class BlockfrostConfig {
         r.requestBuilderFactory = requestBuilderFactory
         r.apiResponseQueue = apiResponseQueue
         r.retryPolicy = retryPolicy
+        r.urlSessionConfigurationModifier = urlSessionConfigurationModifier
         return r
     }
 
@@ -226,46 +227,4 @@ open class BaseService {
 public enum SortOrder: String, CaseIterable {
     case asc = "asc"
     case desc = "desc"
-}
-
-public struct PaginationSetting: CustomStringConvertible, Hashable {
-    public var count: Int = BlockfrostConfig.DEFAULT_COUNT
-    public var page: Int = BlockfrostConfig.DEFAULT_PAGE
-    public var order = BlockfrostConfig.DEFAULT_SORT_ORDER
-
-    public init(count: Int? = nil, page: Int? = nil, order: SortOrder? = nil) {
-        if let _count = count {
-            self.count = _count
-        }
-        if let _page = page {
-            self.page = _page
-        }
-        if let _order = order {
-            self.order = _order
-        }
-    }
-
-    public var description: String {
-        "PaginationSetting(count: \(count), page: \(page), order: \(order))"
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(count)
-        hasher.combine(page)
-        hasher.combine(order)
-    }
-}
-
-public struct AllMethodOptions: CustomStringConvertible {
-    public var batchSize = BlockfrostConfig.DEFAULT_BATCH_SIZE
-    public var order = BlockfrostConfig.DEFAULT_SORT_ORDER
-
-    public init(batchSize: Int? = nil, order: SortOrder? = nil) {
-        if let x = batchSize { self.batchSize = x }
-        if let x = order { self.order = x }
-    }
-
-    public var description: String {
-        "AllMethodOptions(batchSize: \(batchSize), order: \(order))"
-    }
 }

@@ -36,7 +36,6 @@ final class PoolsTests: QuickSpec {
                         }
 
                         expect(r).toNot(beNil())
-                        expect(r).toNot(beEmpty())
                         done()
                     }
                 }

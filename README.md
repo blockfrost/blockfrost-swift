@@ -317,16 +317,16 @@ Class | Method | HTTP request | Description
 
 Lint before publishing:
 ```bash
-pod spec lint --no-clean --verbose --use-modular-headers 
+pod spec lint --no-clean --verbose --use-modular-headers --allow-warnings
 
 # or alternatively: (use_frameworks!)
-pod spec lint --no-clean --verbose --use-modular-headers --use-libraries  
+pod spec lint --no-clean --verbose --use-modular-headers --use-libraries --allow-warnings 
 ```
 
 Publishing new version:
 
 ```bash
-pod repo push trunk BlockfrostSwiftSDK.podspec --verbose  
+pod trunk push BlockfrostSwiftSDK.podspec --verbose  
 ```
 
 Note that this pod requires CocoaPod 1.10+. 

@@ -41,7 +41,7 @@ public class JSONDataEncoding {
     }
     
     public func encode(_ urlRequest: URLRequest, with parameters: [String: Any]?) -> URLRequest {
-        return encode(urlRequest, with: parameters)
+        _encode(urlRequest, with: parameters)
     }
 
     public static func encodingParameters(jsonData: Data?) -> [String: Any]? {

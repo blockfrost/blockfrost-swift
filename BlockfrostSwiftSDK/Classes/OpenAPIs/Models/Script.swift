@@ -19,11 +19,11 @@ public final class Script: Codable, Hashable {
     /** Script hash */
     public var scriptHash: String
     /** Type of the script language */
-    public var type: ModelType
+    public var type: ModelType?
     /** The size of the CBOR serialised script, if a Plutus script */
     public var serialisedSize: Int?
 
-    public init(scriptHash: String, type: ModelType, serialisedSize: Int?) {
+    public init(scriptHash: String, type: ModelType?, serialisedSize: Int?) {
         self.scriptHash = scriptHash
         self.type = type
         self.serialisedSize = serialisedSize

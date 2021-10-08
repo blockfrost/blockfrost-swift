@@ -40,7 +40,8 @@ github "blockfrost/blockfrost-swift" ~> 0.0.4
 ```
 
 ### CocoaPods
-
+         
+Minimal pod version: 1.10+
 Run `pod install`
 
 Podfile by tag:
@@ -311,4 +312,22 @@ Class | Method | HTTP request | Description
  - [TxMetadataLabel](docs/TxMetadataLabel.md)
  - [TxMetadataLabelCbor](docs/TxMetadataLabelCbor.md)
  - [TxMetadataLabelJson](docs/TxMetadataLabelJson.md)
+
+## Pod development
+
+Lint before publishing:
+```bash
+pod spec lint --no-clean --verbose --use-modular-headers 
+
+# or alternatively: (use_frameworks!)
+pod spec lint --no-clean --verbose --use-modular-headers --use-libraries  
+```
+
+Publishing new version:
+
+```bash
+pod repo push trunk BlockfrostSwiftSDK.podspec --verbose  
+```
+
+Note that this pod requires CocoaPod 1.10+. 
 

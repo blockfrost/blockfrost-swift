@@ -641,6 +641,7 @@ open class CardanoTransactionsAPI : BaseService {
         let localVariableRequestBuilder: RequestBuilder<String>.Type = config.requestBuilderFactory.getBuilder()
 
         return localVariableRequestBuilder.init(method: "POST", URLString: localVariableUrlComponents?.string ?? localVariableURLString,
-                parameters: localVariableParameters, headers: localVariableHeaderParameters, data: transaction)
+                                                parameters: localVariableParameters, headers: localVariableHeaderParameters, data: transaction,
+                                                config: self.config)
     }
 }

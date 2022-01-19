@@ -4,8 +4,8 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '10.15'
   s.tvos.deployment_target = '13.0'
   s.watchos.deployment_target = '6.0'
-  s.version = '0.0.5'
-  s.source = { :git => 'git@github.com:blockfrost/blockfrost-swift.git', :tag => '0.0.5' }
+  s.version = '0.0.6'
+  s.source = { :git => 'git@github.com:blockfrost/blockfrost-swift.git', :tag => '0.0.6' }
   s.authors = 'Blockfrost Swift SDK'
   s.license = 'MIT'
   s.homepage = 'https://github.com/blockfrost/blockfrost-swift'

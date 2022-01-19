@@ -18,7 +18,7 @@
 ### Swift package manager
 ```
 dependencies: [
-    .package(url: "https://github.com/blockfrost/blockfrost-swift.git", from: "0.0.5"),
+    .package(url: "https://github.com/blockfrost/blockfrost-swift.git", from: "0.0.6"),
 ],
 
 targets: [
@@ -36,7 +36,7 @@ Run `carthage update`
 
 Cartfile
 ```
-github "blockfrost/blockfrost-swift" ~> 0.0.5
+github "blockfrost/blockfrost-swift" ~> 0.0.6
 ```
 
 ### CocoaPods
@@ -46,12 +46,12 @@ Run `pod install`
        
 Podfile:
 ```
-pod 'BlockfrostSwiftSDK', '~> 0.0.5'
+pod 'BlockfrostSwiftSDK', '~> 0.0.6'
 ```
 
 Or use GitHub, by tag:
 ```
-pod 'BlockfrostSwiftSDK', :git => 'https://github.com/blockfrost/blockfrost-swift.git', :tag => '0.0.5'
+pod 'BlockfrostSwiftSDK', :git => 'https://github.com/blockfrost/blockfrost-swift.git', :tag => '0.0.6'
 ```
 
 or by branch:

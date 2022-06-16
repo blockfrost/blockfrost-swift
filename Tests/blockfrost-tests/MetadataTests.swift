@@ -30,7 +30,7 @@ final class MetadataTests: QuickSpec {
 
         describe("metadata") {
             it("labels"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: 20) { done in
                     let _ = api.getTransactionMetadataLabels { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

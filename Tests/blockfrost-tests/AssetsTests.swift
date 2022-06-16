@@ -23,7 +23,7 @@ class AssetsTests: QuickSpec {
             }
 
             it("all") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: 20) { done in
                     let _ = api.getAssets() { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

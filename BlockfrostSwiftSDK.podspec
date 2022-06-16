@@ -4,8 +4,8 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '10.15'
   s.tvos.deployment_target = '13.0'
   s.watchos.deployment_target = '6.0'
-  s.version = '0.0.6'
-  s.source = { :git => 'git@github.com:blockfrost/blockfrost-swift.git', :tag => '0.0.6' }
+  s.version = '0.0.7'
+  s.source = { :git => 'https://github.com/blockfrost/blockfrost-swift.git', :tag => s.version.to_s }
   s.authors = 'Blockfrost Swift SDK'
   s.license = 'MIT'
   s.homepage = 'https://github.com/blockfrost/blockfrost-swift'
@@ -14,6 +14,4 @@ Pod::Spec.new do |s|
   
   s.dependency 'AnyCodable-FlightSchool', '~> 0.6.2'
   s.dependency 'Alamofire', '~> 5.4.3'
-  #s.dependency 'AwaitKit', '~> 5.2.0'
-  #s.dependency 'SwiftCoroutine', '~>2.1.8'
 end

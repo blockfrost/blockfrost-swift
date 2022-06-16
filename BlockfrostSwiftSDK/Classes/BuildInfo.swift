@@ -1,4 +1,4 @@
 import Foundation
 public class BuildInfo {
-    public static let VERSION="0.0.6"
+    public static let VERSION="0.0.7"
 }

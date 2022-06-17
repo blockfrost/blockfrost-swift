@@ -26,15 +26,9 @@ open class CardanoMetadataAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[TxMetadataLabelCbor], Error>) -> Void
     ) -> APIRequest {
-        getTransactionMetadataCborForLabelWithRequestBuilder(label: label, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionMetadataCborForLabelWithRequestBuilder(label: label, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -59,6 +53,43 @@ open class CardanoMetadataAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Transaction metadata content in CBOR
+
+     - parameter label: (path) Metadata label
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [TxMetadataLabelCbor]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionMetadataCborForLabelAsync(
+            label: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [TxMetadataLabelCbor] {
+        try await asyncWrapper { completion in
+            getTransactionMetadataCborForLabelWithRequestBuilder(label: label, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Transaction metadata content in CBOR. Fetches all paged records.
+
+     - parameter label: (path) Metadata label
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getTransactionMetadataCborForLabelAllAsync(
+            label: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [TxMetadataLabelCbor] {
+        let loader = PageLoader<TxMetadataLabelCbor>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getTransactionMetadataCborForLabel(label: label, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -113,15 +144,9 @@ open class CardanoMetadataAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[TxMetadataLabelJson], Error>) -> Void
     ) -> APIRequest {
-        getTransactionMetadataJsonForLabelWithRequestBuilder(label: label, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionMetadataJsonForLabelWithRequestBuilder(label: label, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -146,6 +171,43 @@ open class CardanoMetadataAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Transaction metadata content in JSON
+
+     - parameter label: (path) Metadata label
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [TxMetadataLabelJson]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionMetadataJsonForLabelAsync(
+            label: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [TxMetadataLabelJson] {
+        try await asyncWrapper { completion in
+            getTransactionMetadataJsonForLabelWithRequestBuilder(label: label, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Transaction metadata content in JSON. Fetches all paged records.
+
+     - parameter label: (path) Metadata label
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getTransactionMetadataJsonForLabelAllAsync(
+            label: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [TxMetadataLabelJson] {
+        let loader = PageLoader<TxMetadataLabelJson>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getTransactionMetadataJsonForLabel(label: label, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -199,15 +261,9 @@ open class CardanoMetadataAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[TxMetadataLabel], Error>) -> Void
     ) -> APIRequest {
-        getTransactionMetadataLabelsWithRequestBuilder(count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionMetadataLabelsWithRequestBuilder(count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -231,6 +287,40 @@ open class CardanoMetadataAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Transaction metadata labels
+
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [TxMetadataLabels]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionMetadataLabelsAsync(
+            count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [TxMetadataLabel] {
+        try await asyncWrapper { completion in
+            getTransactionMetadataLabelsWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    /**
+    Transaction metadata labels. Fetches all paged records.
+
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getTransactionMetadataLabelsAllAsync(
+            order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [TxMetadataLabel] {
+        let loader = PageLoader<TxMetadataLabel>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getTransactionMetadataLabels(count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**

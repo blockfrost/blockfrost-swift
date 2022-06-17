@@ -23,7 +23,7 @@ class AccountsTests: QuickSpec {
             }
 
             it("loads accounts for stake address") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountByStakeAddress(stakeAddress: "stake1u8zu4smzyf2r2mfqjd6tc6vxf2p8rccdfk82ye3eut2udkgs46q0w") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -44,7 +44,7 @@ class AccountsTests: QuickSpec {
             }
 
             it("rewards") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountRewardHistory(stakeAddress: "stake1u9fzg77vrgfqlplkjqe9hntdcvsurpvxd60yp2fhn73002qsv9pdk", count: 3, page: 2) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -64,7 +64,7 @@ class AccountsTests: QuickSpec {
             }
 
             it("history") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountHistory(stakeAddress: "stake1u9fzg77vrgfqlplkjqe9hntdcvsurpvxd60yp2fhn73002qsv9pdk", count: 3, page: 2) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -84,7 +84,7 @@ class AccountsTests: QuickSpec {
             }
 
             it("delegations") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountDelegationHistory(stakeAddress: "stake1u9a3t4rgddm4expj0ucyxhxg3ft9ugk2ry6r9w69h04ea6cfj887f") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -103,7 +103,7 @@ class AccountsTests: QuickSpec {
             }
 
             it("registrations") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountRegistrationHistory(stakeAddress: "stake1u9a3t4rgddm4expj0ucyxhxg3ft9ugk2ry6r9w69h04ea6cfj887f") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -121,7 +121,7 @@ class AccountsTests: QuickSpec {
             }
 
             it("withdrawals") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountWithdrawalHistory(stakeAddress: "stake1u88xakeptjw9jwsytkjal76d07an4thvvrfx3w2kt77pw4sc5rr8k", count: 4, page: 2) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -142,7 +142,7 @@ class AccountsTests: QuickSpec {
             }
 
             it("MIRs") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountMirHistory(stakeAddress: "stake1uyq7039vutuw8v7femqtktdu9zlhnqh3mkvvhdazft9ga2q8zdfkp", count: 1, page: 1) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -160,7 +160,7 @@ class AccountsTests: QuickSpec {
             }
 
             it("addresses") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountAddresses(stakeAddress: "stake1u9a3t4rgddm4expj0ucyxhxg3ft9ugk2ry6r9w69h04ea6cfj887f") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -177,7 +177,7 @@ class AccountsTests: QuickSpec {
             }
 
             it("assets") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountAssets(stakeAddress: "stake1u9e45fvvd4ujpc0kka0pnx9zqdvh9wl96nsg6sje0f5hmfq45lrja") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -195,7 +195,7 @@ class AccountsTests: QuickSpec {
             }
 
             it("assetsAll") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountAssetsAll(stakeAddress: "stake1u9e45fvvd4ujpc0kka0pnx9zqdvh9wl96nsg6sje0f5hmfq45lrja") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

@@ -18,15 +18,23 @@ open class CardanoLedgerAPI: BaseService {
      - parameter completion: completion handler to receive the result
      */
     open func getGenesis(apiResponseQueue: DispatchQueue? = nil, completion: @escaping (_ result: Swift.Result<GenesisContent, Error>) -> Void) -> APIRequest {
-        getGenesisWithRequestBuilder()
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getGenesisWithRequestBuilder()
+        }
+    }
+
+    /**
+     Blockchain genesis
+
+     - returns: GenesisContent
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getGenesisAsync(
+
+    ) async throws -> GenesisContent {
+        try await asyncWrapper { completion in
+            getGenesisWithRequestBuilder().execute { result in completion(result) }
+        }
     }
 
     /**

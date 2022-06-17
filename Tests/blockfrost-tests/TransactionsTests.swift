@@ -30,7 +30,7 @@ final class TransactionsTests: QuickSpec {
         describe("transactions") {
             
             it("byHash"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getTransaction(hash: "28172ea876c3d1e691284e5179fae2feb3e69d7d41e43f8023dc380115741026") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -58,7 +58,7 @@ final class TransactionsTests: QuickSpec {
             }
 
             it("utxos"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getTransactionUtxos(hash: "927edb96f3386ab91b5f5d85d84cb4253c65b1c2f65fa7df25f81fab1d62987a") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -77,7 +77,7 @@ final class TransactionsTests: QuickSpec {
             }
 
             it("withdrawals"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getTransactionWithdrawals(hash: "9f811b021492a5544207f7b566b4e67c87f0918b9e7055ab3074d552ab18e895") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -94,7 +94,7 @@ final class TransactionsTests: QuickSpec {
             }
 
             it("mirs"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getTransactionMirs(hash: "7b57f2cf1c442c563647ab29669c88b9116c2668d31d42526ff27ed614da1252") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -108,7 +108,7 @@ final class TransactionsTests: QuickSpec {
             }
 
             it("delegations"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getTransactionDelegations(hash: "c2120581050a1116ab38a5ac8a62d64df4cf12cf3370d22337201d36eb65fcc4") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -127,7 +127,7 @@ final class TransactionsTests: QuickSpec {
             }
 
             it("pool updates"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getTransactionPoolUpdates(hash: "28bd5e8c342ab89d6642e446cb299058ea36256af1718e4af9326898ce4192d7") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -193,7 +193,7 @@ final class TransactionsTests: QuickSpec {
             }
 
             it("stakes"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getTransactionStakes(hash: "c2120581050a1116ab38a5ac8a62d64df4cf12cf3370d22337201d36eb65fcc4") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -211,7 +211,7 @@ final class TransactionsTests: QuickSpec {
             }
 
             it("pool retires"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getTransactionPoolRetires(hash: "33770d42c7bc8a9a0bc9830ffb97941574dc61dc534796dd8614b99b6aadace4") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -229,7 +229,7 @@ final class TransactionsTests: QuickSpec {
             }
 
             it("tsxMetadata"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getTransactionMetadata(hash: "e641005803337a553a03cf3c11a1819491a629bd7d0a3c39e4866a01b5dac36d") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -270,7 +270,7 @@ final class TransactionsTests: QuickSpec {
 
             it("submit") {
                 let dummyTx = "33770d42c7bc8a9a0bc9830ffb97941574dc61dc534796dd8614b99b6aadace4".data(using: .ascii)!
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.submitTransaction(transaction: dummyTx) { resp in
                         switch (resp) {
                         case let .failure(err):

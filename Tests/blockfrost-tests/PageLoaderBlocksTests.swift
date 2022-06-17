@@ -42,7 +42,7 @@ final class PageLoaderBlocksTests: QuickSpec {
 
             beforeSuite {
                 // Load latest block on the chain
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getLatestBlock { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -63,7 +63,7 @@ final class PageLoaderBlocksTests: QuickSpec {
             describe("DispatchPageLoader") {
                 it("testNextBlocksAll_willLoadAllPages") {
                     var isOk = false
-                    waitUntil(timeout: 10) { done in
+                    waitUntil(timeout: TestConsts.TIMEOUT) { done in
                         self.fixtureDispatchLoader(api: api, blockToLoad: blockToLoad) { loader, resp in
                             guard let res = TestUtils.getResult(resp: resp) else {
                                 done(); return;
@@ -80,7 +80,7 @@ final class PageLoaderBlocksTests: QuickSpec {
 
                 it("testNextBlocksAll_willBeCancelledOnPage12") {
                     var isOk = false
-                    waitUntil(timeout: 10) { done in
+                    waitUntil(timeout: TestConsts.TIMEOUT) { done in
                         self.fixtureDispatchLoader(api: api, blockToLoad: blockToLoad, pageCancel: PAGE_CANCEL) { loader, res in
                             switch (res) {
                             case let .failure(err):
@@ -99,7 +99,7 @@ final class PageLoaderBlocksTests: QuickSpec {
 
                 it("testNextBlocksAll_willFailOnPage12") {
                     var isOk = false
-                    waitUntil(timeout: 10) { done in
+                    waitUntil(timeout: TestConsts.TIMEOUT) { done in
                         self.fixtureDispatchLoader(api: api, blockToLoad: blockToLoad, pageFail: PAGE_FAIL) { loader, res in
                             switch (res) {
                             case let .failure(err):
@@ -156,13 +156,13 @@ final class PageLoaderBlocksTests: QuickSpec {
                                 break
                             }
                         }).store(in: &subscriptions)
-                    self.wait(for: [ex1, ex2], timeout: 10)
+                    self.wait(for: [ex1, ex2], timeout: TestConsts.TIMEOUT)
                     expect(isOk).to(equal(4))
                 }
 
                 it("testNextBlocksAll_willBeCancelledOnPage12") {
                     var isOk = 0
-                    waitUntil(timeout: 10) { done in
+                    waitUntil(timeout: TestConsts.TIMEOUT) { done in
                         var subs = [AnyCancellable { }]
                         subs[0] = self.fixtureCombineLoader(api: api, blockToLoad: blockToLoad,
                                 onCancelled: {
@@ -201,7 +201,7 @@ final class PageLoaderBlocksTests: QuickSpec {
 
                 it("testNextBlocksAll_willFailOnPage12") {
                     var isOk = 0
-                    waitUntil(timeout: 10) { done in
+                    waitUntil(timeout: TestConsts.TIMEOUT) { done in
                         self.fixtureCombineLoader(api: api, blockToLoad: blockToLoad,
                                 onCancelled: {
                                     fail("Load fail should not trigger cancellation")

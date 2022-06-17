@@ -26,7 +26,7 @@ final class HealthTests: QuickSpec {
 
         describe("health") {
             it("root"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getApiRoot { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -40,7 +40,7 @@ final class HealthTests: QuickSpec {
             }
 
             it("getHealth"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getHealth { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -54,7 +54,7 @@ final class HealthTests: QuickSpec {
             }
 
             it("getClock"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getCurrentBackendTime { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

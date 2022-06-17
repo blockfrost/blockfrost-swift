@@ -18,15 +18,23 @@ open class CardanoNetworkAPI: BaseService {
      - parameter completion: completion handler to receive the result
      */
     open func getNetwork(apiResponseQueue: DispatchQueue? = nil, completion: @escaping (_ result: Swift.Result<Network, Error>) -> Void) -> APIRequest {
-        getNetworkWithRequestBuilder()
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getNetworkWithRequestBuilder()
+        }
+    }
+
+    /**
+     Network information
+
+     - returns: Network
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getNetworkAsync(
+
+    ) async throws -> Network {
+        try await asyncWrapper { completion in
+            getNetworkWithRequestBuilder().execute { result in completion(result) }
+        }
     }
 
     /**

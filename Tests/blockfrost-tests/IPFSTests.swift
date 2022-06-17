@@ -40,7 +40,7 @@ final class IPFSTests: QuickSpec {
                 let fileUrl = URL(fileURLWithPath: path)
                 var ipfsHash: String!
 
-                waitUntil(timeout: 90) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT_LONG) { done in
                     let _ = apiAdd.add(file: fileUrl) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -55,7 +55,7 @@ final class IPFSTests: QuickSpec {
                     }
                 }
 
-                waitUntil(timeout: 90) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT_LONG) { done in
                     let _ = apiPin.pinAdd(iPFSPath: ipfsHash) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -67,7 +67,7 @@ final class IPFSTests: QuickSpec {
                     }
                 }
 
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = apiPin.getPinList { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -80,7 +80,7 @@ final class IPFSTests: QuickSpec {
                     }
                 }
 
-                waitUntil(timeout: 15) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     guard let idata = try? Data(contentsOf: fileUrl) else {
                         fail("Could not read input file")
                         return

@@ -18,15 +18,23 @@ open class HealthAPI: BaseService {
      - parameter completion: completion handler to receive the result
      */
     open func getApiRoot(apiResponseQueue: DispatchQueue? = nil, completion: @escaping (_ result: Swift.Result<ApiRoot, Error>) -> Void) -> APIRequest {
-        getApiRootWithRequestBuilder()
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getApiRootWithRequestBuilder()
+        }
+    }
+
+    /**
+     Root endpoint
+
+     - returns: GetApiRoot200Response
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getApiRootAsync(
+
+    ) async throws -> ApiRoot {
+        try await asyncWrapper { completion in
+            getApiRootWithRequestBuilder().execute { result in completion(result) }
+        }
     }
 
     /**
@@ -61,15 +69,23 @@ open class HealthAPI: BaseService {
      - parameter completion: completion handler to receive the result
      */
     open func getCurrentBackendTime(apiResponseQueue: DispatchQueue? = nil, completion: @escaping (_ result: Swift.Result<Clock, Error>) -> Void) -> APIRequest {
-        getCurrentBackendTimeWithRequestBuilder()
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getCurrentBackendTimeWithRequestBuilder()
+        }
+    }
+
+    /**
+     Current backend time
+
+     - returns: GetCurrentBackendTime200Response
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getCurrentBackendTimeAsync(
+
+    ) async throws -> Clock {
+        try await asyncWrapper { completion in
+            getCurrentBackendTimeWithRequestBuilder().execute { result in completion(result) }
+        }
     }
 
     /**
@@ -104,15 +120,23 @@ open class HealthAPI: BaseService {
      - parameter completion: completion handler to receive the result
      */
     open func getHealth(apiResponseQueue: DispatchQueue? = nil, completion: @escaping (_ result: Swift.Result<Health, Error>) -> Void) -> APIRequest {
-        getHealthWithRequestBuilder()
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getHealthWithRequestBuilder()
+        }
+    }
+
+    /**
+     Backend health status
+
+     - returns: GetHealth200Response
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getHealthAsync(
+
+    ) async throws -> Health {
+        try await asyncWrapper { completion in
+            getHealthWithRequestBuilder().execute { result in completion(result) }
+        }
     }
 
     /**

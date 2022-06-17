@@ -29,15 +29,9 @@ open class IPFSPinsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[PinItem], Error>) -> Void
     ) -> APIRequest {
-        getPinListWithRequestBuilder(count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getPinListWithRequestBuilder(count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -61,6 +55,41 @@ open class IPFSPinsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     List pinned objects
+
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [GetPinList200Response]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getPinListAsync(
+            count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [PinItem] {
+        try await asyncWrapper { completion in
+            getPinListWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+
+    /**
+    List pinned objects. Fetches all paged records.
+
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getPinListAllAsync(
+            order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [PinItem] {
+        let loader = PageLoader<PinItem>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getPinList(count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -108,15 +137,24 @@ open class IPFSPinsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<PinItem, Error>) -> Void
     ) -> APIRequest {
-        getPinListByIpfsPathWithRequestBuilder(iPFSPath: iPFSPath)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getPinListByIpfsPathWithRequestBuilder(iPFSPath: iPFSPath)
+        }
+    }
+
+    /**
+     Get details about pinned object
+
+     - parameter iPFSPath: (path)
+     - returns: GetPinListByIpfsPath200Response
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getPinListByIpfsPathAsync(
+            iPFSPath: String
+    ) async throws -> PinItem {
+        try await asyncWrapper { completion in
+            getPinListByIpfsPathWithRequestBuilder(iPFSPath: iPFSPath).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -160,15 +198,24 @@ open class IPFSPinsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<PinResponse, Error>) -> Void
     ) -> APIRequest {
-        pinAddWithRequestBuilder(iPFSPath: iPFSPath)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            pinAddWithRequestBuilder(iPFSPath: iPFSPath)
+        }
+    }
+
+    /**
+     Pin an object
+
+     - parameter iPFSPath: (path)
+     - returns: PinAdd200Response
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func pinAddAsync(
+            iPFSPath: String
+    ) async throws -> PinResponse {
+        try await asyncWrapper { completion in
+            pinAddWithRequestBuilder(iPFSPath: iPFSPath).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -211,15 +258,23 @@ open class IPFSPinsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<PinResponse, Error>) -> Void
     ) -> APIRequest {
-        removePinWithRequestBuilder(iPFSPath: iPFSPath)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            removePinWithRequestBuilder(iPFSPath: iPFSPath)
+        }
+    }
+
+    /**
+
+     - parameter iPFSPath: (path)
+     - returns: RemovePin200Response
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func removePinAsync(
+            iPFSPath: String
+    ) async throws -> PinResponse {
+        try await asyncWrapper { completion in
+            removePinWithRequestBuilder(iPFSPath: iPFSPath).execute { result in completion(result) }
+        }
     }
 
     /**

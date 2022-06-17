@@ -23,15 +23,24 @@ open class CardanoScriptsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<Script, Error>) -> Void
     ) -> APIRequest {
-        getScriptWithRequestBuilder(scriptHash: scriptHash)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getScriptWithRequestBuilder(scriptHash: scriptHash)
+        }
+    }
+
+    /**
+     Specific script
+
+     - parameter scriptHash: (path) Hash of the script
+     - returns: Script
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getScriptAsync(
+            scriptHash: String
+    ) async throws -> Script {
+        try await asyncWrapper { completion in
+            getScriptWithRequestBuilder(scriptHash: scriptHash).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -78,15 +87,9 @@ open class CardanoScriptsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[ScriptRedeemer], Error>) -> Void
     ) -> APIRequest {
-        getScriptRedeemersWithRequestBuilder(scriptHash: scriptHash, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getScriptRedeemersWithRequestBuilder(scriptHash: scriptHash, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -111,6 +114,43 @@ open class CardanoScriptsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Redeemers of a specific script
+
+     - parameter scriptHash: (path) Hash of the script
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [ScriptRedeemers]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getScriptRedeemersAsync(
+            scriptHash: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [ScriptRedeemer] {
+        try await asyncWrapper { completion in
+            getScriptRedeemersWithRequestBuilder(scriptHash: scriptHash, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+
+    /**
+    Redeemers of a specific script. Fetches all paged records.
+
+     - parameter scriptHash: (path) Hash of the script
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getScriptRedeemersAllAsync(
+            scriptHash: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [ScriptRedeemer] {
+        let loader = PageLoader<ScriptRedeemer>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getScriptRedeemers(scriptHash: scriptHash, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -164,15 +204,9 @@ open class CardanoScriptsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[Script], Error>) -> Void
     ) -> APIRequest {
-        getScriptsWithRequestBuilder(count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getScriptsWithRequestBuilder(count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -196,6 +230,41 @@ open class CardanoScriptsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Scripts
+
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [Scripts]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getScriptsAsync(
+            count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [Script] {
+        try await asyncWrapper { completion in
+            getScriptsWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Scripts. Fetches all paged records.
+
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getScriptsAllAsync(
+            order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [Script] {
+        let loader = PageLoader<Script>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getScripts(count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**

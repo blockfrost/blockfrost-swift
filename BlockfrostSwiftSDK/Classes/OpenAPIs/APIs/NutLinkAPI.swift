@@ -22,15 +22,23 @@ open class NutLinkAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<NutlinkAddress, Error>) -> Void
     ) -> APIRequest {
-        getAddressWithRequestBuilder(address: address)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getAddressWithRequestBuilder(address: address)
+        }
+    }
+
+    /**
+
+     - parameter address: (path)
+     - returns: NutlinkAddress
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getAddressAsync(
+            address: String
+    ) async throws -> NutlinkAddress {
+        try await asyncWrapper { completion in
+            getAddressWithRequestBuilder(address: address).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -75,15 +83,9 @@ open class NutLinkAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[NutlinkAddressTickers], Error>) -> Void
     ) -> APIRequest {
-        getAddressTickersWithRequestBuilder(address: address, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getAddressTickersWithRequestBuilder(address: address, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -107,6 +109,41 @@ open class NutLinkAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+
+     - parameter address: (path)
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [NutlinkAddressTickers]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getAddressTickersAsync(
+            address: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [NutlinkAddressTickers] {
+        try await asyncWrapper { completion in
+            getAddressTickersWithRequestBuilder(address: address, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+
+    /**
+
+     - parameter address: (path)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getAddressTickersAllAsync(
+            address: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [NutlinkAddressTickers] {
+        let loader = PageLoader<NutlinkAddressTickers>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getAddressTickers(address: address, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -160,15 +197,9 @@ open class NutLinkAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[NutlinkAddressTicker], Error>) -> Void
     ) -> APIRequest {
-        getTickerRecordsByAddressAndTickerWithRequestBuilder(address: address, ticker: ticker, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTickerRecordsByAddressAndTickerWithRequestBuilder(address: address, ticker: ticker, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -193,6 +224,43 @@ open class NutLinkAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+
+     - parameter address: (path)
+     - parameter ticker: (path)
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [NutlinkAddressTicker]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTickerRecordsByAddressAndTickerAsync(
+            address: String, ticker: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [NutlinkAddressTicker] {
+        try await asyncWrapper { completion in
+            getTickerRecordsByAddressAndTickerWithRequestBuilder(address: address, ticker: ticker, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+
+    /**
+
+     - parameter address: (path)
+     - parameter ticker: (path)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getTickerRecordsByAddressAndTickerAllAsync(
+            address: String, ticker: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [NutlinkAddressTicker] {
+        let loader = PageLoader<NutlinkAddressTicker>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getTickerRecordsByAddressAndTicker(address: address, ticker: ticker, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -249,15 +317,9 @@ open class NutLinkAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[NutlinkTickersTicker], Error>) -> Void
     ) -> APIRequest {
-        getTickerRecordsByTickerWithRequestBuilder(ticker: ticker, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTickerRecordsByTickerWithRequestBuilder(ticker: ticker, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -281,6 +343,41 @@ open class NutLinkAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+
+     - parameter ticker: (path)
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [NutlinkTickersTicker]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTickerRecordsByTickerAsync(
+            ticker: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [NutlinkTickersTicker] {
+        try await asyncWrapper { completion in
+            getTickerRecordsByTickerWithRequestBuilder(ticker: ticker, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+
+     - parameter ticker: (path)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getTickerRecordsByTickerAllAsync(
+            ticker: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [NutlinkTickersTicker] {
+        let loader = PageLoader<NutlinkTickersTicker>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getTickerRecordsByTicker(ticker: ticker, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**

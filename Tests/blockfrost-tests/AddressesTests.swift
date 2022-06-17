@@ -23,7 +23,7 @@ class AddressesTests: QuickSpec {
             }
 
             it("addresses") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAddress(address: "addr1q8zu4smzyf2r2mfqjd6tc6vxf2p8rccdfk82ye3eut2udkw9etpkygj5x4kjpym5h35cvj5zw83s6nvw5fnrnck4cmvshkfm4y") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -39,7 +39,7 @@ class AddressesTests: QuickSpec {
             }
 
             it("total / details") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAddressDetails(address: "addr1q8zu4smzyf2r2mfqjd6tc6vxf2p8rccdfk82ye3eut2udkw9etpkygj5x4kjpym5h35cvj5zw83s6nvw5fnrnck4cmvshkfm4y") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -56,7 +56,7 @@ class AddressesTests: QuickSpec {
             }
 
             it("utxos") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     _ = api.getAddressUtxos(address: "addr1q8zu4smzyf2r2mfqjd6tc6vxf2p8rccdfk82ye3eut2udkw9etpkygj5x4kjpym5h35cvj5zw83s6nvw5fnrnck4cmvshkfm4y") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -69,7 +69,7 @@ class AddressesTests: QuickSpec {
             }
 
             it("txs"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAddressTransactions(address: "addr1q8zu4smzyf2r2mfqjd6tc6vxf2p8rccdfk82ye3eut2udkw9etpkygj5x4kjpym5h35cvj5zw83s6nvw5fnrnck4cmvshkfm4y") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

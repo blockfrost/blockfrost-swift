@@ -26,15 +26,9 @@ open class CardanoAccountsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[AccountAddressesContent], Error>) -> Void
     ) -> APIRequest {
-        getAccountAddressesWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getAccountAddressesWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -59,6 +53,43 @@ open class CardanoAccountsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Account associated addresses
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [AccountAddressesContent]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getAccountAddressesAsync(
+            stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [AccountAddressesContent] {
+        try await asyncWrapper { completion in
+            getAccountAddressesWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Account associated addresses. Fetches all paged records.
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getAccountAddressesAllAsync(
+            stakeAddress: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [AccountAddressesContent] {
+        let loader = PageLoader<AccountAddressesContent>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getAccountAddresses(stakeAddress: stakeAddress, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -113,15 +144,9 @@ open class CardanoAccountsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[AccountAddressesAsset], Error>) -> Void
     ) -> APIRequest {
-        getAccountAssetsWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getAccountAssetsWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -146,6 +171,43 @@ open class CardanoAccountsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Assets associated with the account addresses
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [AccountAddressesAssets]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getAccountAssetsAsync(
+            stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [AccountAddressesAsset] {
+        try await asyncWrapper { completion in
+            getAccountAssetsWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Assets associated with the account addresses. Fetches all paged records.
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getAccountAssetsAllAsync(
+            stakeAddress: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [AccountAddressesAsset] {
+        let loader = PageLoader<AccountAddressesAsset>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getAccountAssets(stakeAddress: stakeAddress, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -197,15 +259,24 @@ open class CardanoAccountsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<AccountContent, Error>) -> Void
     ) -> APIRequest {
-        getAccountByStakeAddressWithRequestBuilder(stakeAddress: stakeAddress)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getAccountByStakeAddressWithRequestBuilder(stakeAddress: stakeAddress)
+        }
+    }
+
+    /**
+     Specific account address
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - returns: AccountContent
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getAccountByStakeAddressAsync(
+            stakeAddress: String
+    ) async throws -> AccountContent {
+        try await asyncWrapper { completion in
+            getAccountByStakeAddressWithRequestBuilder(stakeAddress: stakeAddress).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -252,15 +323,9 @@ open class CardanoAccountsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[AccountDelegationContent], Error>) -> Void
     ) -> APIRequest {
-        getAccountDelegationHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getAccountDelegationHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -285,6 +350,43 @@ open class CardanoAccountsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Account delegation history
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [AccountDelegationContent]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getAccountDelegationHistoryAsync(
+            stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [AccountDelegationContent] {
+        try await asyncWrapper { completion in
+            getAccountDelegationHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Account delegation history. Fetches all paged records.
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getAccountDelegationHistoryAllAsync(
+            stakeAddress: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [AccountDelegationContent] {
+        let loader = PageLoader<AccountDelegationContent>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getAccountDelegationHistory(stakeAddress: stakeAddress, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -339,15 +441,9 @@ open class CardanoAccountsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[AccountHistoryContent], Error>) -> Void
     ) -> APIRequest {
-        getAccountHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getAccountHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -372,6 +468,43 @@ open class CardanoAccountsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Account history
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [AccountHistoryContent]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getAccountHistoryAsync(
+            stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [AccountHistoryContent] {
+        try await asyncWrapper { completion in
+            getAccountHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Account history. Fetches all paged records.
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getAccountHistoryAllAsync(
+            stakeAddress: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [AccountHistoryContent] {
+        let loader = PageLoader<AccountHistoryContent>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getAccountHistory(stakeAddress: stakeAddress, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -426,15 +559,9 @@ open class CardanoAccountsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[AccountMirContent], Error>) -> Void
     ) -> APIRequest {
-        getAccountMirHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getAccountMirHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -459,6 +586,43 @@ open class CardanoAccountsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Account MIR history
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [AccountMirContent]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getAccountMirHistoryAsync(
+            stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [AccountMirContent] {
+        try await asyncWrapper { completion in
+            getAccountMirHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Account MIR history. Fetches all paged records.
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getAccountMirHistoryAllAsync(
+            stakeAddress: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [AccountMirContent] {
+        let loader = PageLoader<AccountMirContent>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getAccountMirHistory(stakeAddress: stakeAddress, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -513,15 +677,9 @@ open class CardanoAccountsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[AccountRegistrationContent], Error>) -> Void
     ) -> APIRequest {
-        getAccountRegistrationHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getAccountRegistrationHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -546,6 +704,43 @@ open class CardanoAccountsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Account registration history
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [AccountRegistrationContent]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getAccountRegistrationHistoryAsync(
+            stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [AccountRegistrationContent] {
+        try await asyncWrapper { completion in
+            getAccountRegistrationHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Account registration history. Fetches all paged records.
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getAccountRegistrationHistoryAllAsync(
+            stakeAddress: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [AccountRegistrationContent] {
+        let loader = PageLoader<AccountRegistrationContent>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getAccountRegistrationHistory(stakeAddress: stakeAddress, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -600,15 +795,9 @@ open class CardanoAccountsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[AccountRewardContent], Error>) -> Void
     ) -> APIRequest {
-        getAccountRewardHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getAccountRewardHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -633,6 +822,43 @@ open class CardanoAccountsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Account reward history
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [AccountRewardContent]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getAccountRewardHistoryAsync(
+            stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [AccountRewardContent] {
+        try await asyncWrapper { completion in
+            getAccountRewardHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Account reward history. Fetches all paged records.
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getAccountRewardHistoryAllAsync(
+            stakeAddress: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [AccountRewardContent] {
+        let loader = PageLoader<AccountRewardContent>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getAccountRewardHistory(stakeAddress: stakeAddress, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -687,15 +913,9 @@ open class CardanoAccountsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[AccountWithdrawalContent], Error>) -> Void
     ) -> APIRequest {
-        getAccountWithdrawalHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getAccountWithdrawalHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -720,6 +940,43 @@ open class CardanoAccountsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Account withdrawal history
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [AccountWithdrawalContent]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getAccountWithdrawalHistoryAsync(
+            stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [AccountWithdrawalContent] {
+        try await asyncWrapper { completion in
+            getAccountWithdrawalHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Account withdrawal history. Fetches all paged records.
+
+     - parameter stakeAddress: (path) Bech32 stake address.
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getAccountWithdrawalHistoryAllAsync(
+            stakeAddress: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [AccountWithdrawalContent] {
+        let loader = PageLoader<AccountWithdrawalContent>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getAccountWithdrawalHistory(stakeAddress: stakeAddress, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**

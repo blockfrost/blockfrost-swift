@@ -55,6 +55,7 @@ open class APIAlamoRequest : APIRequest {
         super.init()
     }
 
+    @discardableResult
     override open func cancel() -> Bool {
         guard let req = request else { return false }
         req.cancel()
@@ -72,7 +73,7 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
      configuration.
      API queue has to be a serial queue for Alamofire root queue
      */
-    open func createSessionManager(rootQueue: DispatchQueue? = nil) -> Alamofire.Session {
+    open func createSessionManager(interceptor: RequestInterceptor? = nil, rootQueue: DispatchQueue? = nil) -> Alamofire.Session {
         let configuration = URLSessionConfiguration.default
         configuration.httpAdditionalHeaders = buildHeaders()
         configuration.headers.add(.userAgent("\(BlockfrostConfig.USER_AGENT)-\(BuildInfo.VERSION)"))
@@ -83,7 +84,7 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
             cfgModifier(configuration)
         }
         let queue = rootQueue ?? DispatchQueue(label: "org.alamofire.session.rootQueue")
-        return Alamofire.Session(configuration: configuration, rootQueue: queue, interceptor: config.retryPolicy)
+        return Alamofire.Session(configuration: configuration, rootQueue: queue, interceptor: interceptor ?? config.retryPolicy)
     }
 
     /**
@@ -224,7 +225,7 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
         return String(data: dt, encoding: .utf8)
     }
 
-    fileprivate func buildError<R>(_ response: DataResponse<R, AFError>, error: Error) -> Error {
+    fileprivate func buildError<R>(_ response: DataResponse<R, AFError>, error: Error) -> ErrorResponse {
         if let dt = response.data {
             let decoded = CodableHelper.decode(Status.self, from: dt)
             switch(decoded){
@@ -386,12 +387,12 @@ open class AlamofireRequestBuilder<T>: RequestBuilder<T> {
 
             let filenameKey = "filename="
             guard let range = contentItem.range(of: filenameKey) else {
-                break
+                continue
             }
 
             filename = contentItem
             return filename?
-                .replacingCharacters(in: range, with:"")
+                .replacingCharacters(in: range, with: "")
                 .replacingOccurrences(of: "\"", with: "")
                 .trimmingCharacters(in: .whitespacesAndNewlines)
         }
@@ -472,6 +473,50 @@ open class AlamofireDecodableRequestBuilder<T:Decodable>: AlamofireRequestBuilde
                             body: (r as! T)
                         ))
                     )
+                }
+            })
+        case is URL.Type:
+            validatedRequest.responseData(queue: apiResponseQueue ?? config.apiResponseQueue, completionHandler: { dataResponse in
+                cleanupRequest()
+
+                do {
+                    guard case .success = dataResponse.result else {
+                        throw DownloadException.responseFailed
+                    }
+
+                    guard let data = dataResponse.data else {
+                        throw DownloadException.responseDataMissing
+                    }
+
+                    guard let request = request.request else {
+                        throw DownloadException.requestMissing
+                    }
+
+                    let fileManager = FileManager.default
+                    let urlRequest = try request.asURLRequest()
+                    let cachesDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+                    let requestURL = try self.getURL(from: urlRequest)
+
+                    var requestPath = try self.getPath(from: requestURL)
+
+                    if let headerFileName = self.getFileName(fromContentDisposition: dataResponse.response?.allHeaderFields["Content-Disposition"] as? String) {
+                        requestPath = requestPath.appending("/\(headerFileName)")
+                    } else {
+                        requestPath = requestPath.appending("/tmp.BlockfrostSDK.\(UUID().uuidString)")
+                    }
+
+                    let filePath = cachesDirectory.appendingPathComponent(requestPath)
+                    let directoryPath = filePath.deletingLastPathComponent().path
+
+                    try fileManager.createDirectory(atPath: directoryPath, withIntermediateDirectories: true, attributes: nil)
+                    try data.write(to: filePath, options: .atomic)
+
+                    completion(.success(Response(response: dataResponse.response!, body: (filePath as! T))))
+
+                } catch let requestParserError as DownloadException {
+                    completion(.failure(ErrorResponse.error(400, dataResponse.data, dataResponse.response, requestParserError)))
+                } catch {
+                    completion(.failure(ErrorResponse.error(400, dataResponse.data, dataResponse.response, error)))
                 }
             })
         case is Void.Type:

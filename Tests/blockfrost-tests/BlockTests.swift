@@ -13,6 +13,7 @@ import Nimble
 @testable import BlockfrostSwiftSDK
 
 final class BlockTests: QuickSpec {
+    
     override func spec() {
         var config = BlockfrostConfig()
         var api: CardanoBlocksAPI!
@@ -32,7 +33,7 @@ final class BlockTests: QuickSpec {
 
         describe("blocks") {
             it("getLatest"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getLatestBlock() { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -49,7 +50,7 @@ final class BlockTests: QuickSpec {
             }
 
             it("slot"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getBlockInSlot(slotNumber: 1) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -64,7 +65,7 @@ final class BlockTests: QuickSpec {
             }
 
             it("epochSlot"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getBlockInEpochInSlot(epochNumber: 0, slotNumber: 1031) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -81,7 +82,7 @@ final class BlockTests: QuickSpec {
             }
 
             it("getLatestTxs"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getTransactionsInLatestBlock() { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -94,7 +95,7 @@ final class BlockTests: QuickSpec {
             }
 
             it("getLatestTxsAll"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getTransactionsInLatestBlockAll() { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -106,8 +107,24 @@ final class BlockTests: QuickSpec {
                 }
             }
 
+            if #available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *) {
+                it("getLatestTxsAsync") {
+                    self.runAsyncTest {
+                        let r = try await api.getTransactionsInLatestBlockAsync()
+                        expect(r).toNot(beNil())
+                    }
+                }
+
+                it("getLatestTxsAllAsync") {
+                    self.runAsyncTest {
+                        let r = try await api.getTransactionsInLatestBlockAllAsync()
+                        expect(r).toNot(beNil())
+                    }
+                }
+            }
+
             it("getGenesis"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getBlock(hashOrNumber: "5f20df933584822601f9e3f8c024eb5eb252fe8cefb24d1317dc3d432e940ebb") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -135,7 +152,7 @@ final class BlockTests: QuickSpec {
             }
 
             it("previous"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getPreviousBlocks(hashOrNumber: "5360435", count: 1) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -160,7 +177,7 @@ final class BlockTests: QuickSpec {
             }
 
             it("next") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getNextBlocks(hashOrNumber: "2828500") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -189,7 +206,7 @@ final class BlockTests: QuickSpec {
             }
 
             it("txs"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getBlockTransactions(hashOrNumber: "5360435") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -228,7 +245,7 @@ final class BlockTests: QuickSpec {
             }
 
             it("txsAll"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getBlockTransactionsAll(hashOrNumber: "5549919") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

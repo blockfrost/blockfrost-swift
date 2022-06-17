@@ -5,6 +5,8 @@
 import Foundation
 import BlockfrostSwiftSDK
 import Nimble
+import Quick
+import XCTest
 
 open class TestUtils {
      public class func initConfig(ipfs: Bool = false) -> BlockfrostConfig? {
@@ -31,6 +33,42 @@ open class TestUtils {
                return nil
           case let .success(r):
                return r
+          }
+     }
+}
+
+extension QuickSpec {
+     func runAsyncTest(
+             named testName: String = #function,
+             in file: StaticString = #file,
+             at line: UInt = #line,
+             withTimeout timeout: TimeInterval = TestConsts.TIMEOUT,
+             test: @escaping () async throws -> Void
+     ) {
+          var thrownError: Error?
+          let errorHandler = {
+               thrownError = $0
+          }
+          let expectation = expectation(description: testName)
+
+          Task {
+               do {
+                    try await test()
+               } catch {
+                    errorHandler(error)
+               }
+
+               expectation.fulfill()
+          }
+
+          waitForExpectations(timeout: timeout)
+
+          if let error = thrownError {
+               XCTFail(
+                       "Async error thrown: \(error)",
+                       file: file,
+                       line: line
+               )
           }
      }
 }

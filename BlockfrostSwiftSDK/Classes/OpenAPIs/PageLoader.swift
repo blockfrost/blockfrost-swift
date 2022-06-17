@@ -158,6 +158,35 @@ open class DispatchPageLoader<T> {
         progressHandler?(.started)
         feedQueue()
     }
+
+    open func loadAllAsync(
+            _ loader: @escaping (_ count: Int, _ page: Int, _ completion: @escaping LoaderCompletion) -> Void
+    ) async throws -> [T]
+    {
+        self.loader = loader
+        return try await withTaskCancellationHandler {
+            try Task.checkCancellation()
+            return try await withCheckedThrowingContinuation { continuation in
+                guard !Task.isCancelled else {
+                    continuation.resume(throwing: CancellationError())
+                    return
+                }
+
+                let completion: (_ result: LoaderResult) -> Void = { result in
+                    switch result {
+                    case let .success(response):
+                        continuation.resume(returning: response)
+                    case let .failure(error):
+                        continuation.resume(throwing: error)
+                    }
+                }
+
+                self.loadAll(loader, completion: completion)
+            }
+        } onCancel: {
+            self.cancel()
+        }
+    }
 }
 
 /**
@@ -367,6 +396,7 @@ open class APILoaderRequest<T> : APIRequest {
         super.init()
     }
 
+    @discardableResult
     override open func cancel() -> Bool {
         guard let ldr = loader else { return false }
         ldr.cancel()

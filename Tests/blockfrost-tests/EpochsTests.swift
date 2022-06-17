@@ -26,7 +26,7 @@ final class EpochsTests: QuickSpec {
 
         describe("epochs") {
             it("getLatest"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getLatestEpoch { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -39,7 +39,7 @@ final class EpochsTests: QuickSpec {
             }
 
             it("epoch0"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getEpoch(number: 0) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -62,7 +62,7 @@ final class EpochsTests: QuickSpec {
             }
 
             it("epoch242"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getEpoch(number: 242) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -85,7 +85,7 @@ final class EpochsTests: QuickSpec {
             }
 
             it("stakes242"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getActiveStakesForEpoch(number: 242) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -99,7 +99,7 @@ final class EpochsTests: QuickSpec {
             }
 
             it("parameters267"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getEpochParam(number: 267) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -130,7 +130,7 @@ final class EpochsTests: QuickSpec {
             }
 
             it("next"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getNextEpochs(number: 242) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -145,7 +145,7 @@ final class EpochsTests: QuickSpec {
             }
 
             it("prev"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getPreviousEpochs(number: 242) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -160,7 +160,7 @@ final class EpochsTests: QuickSpec {
             }
 
             it("blocks"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getBlocksForEpoch(number: 242, count: 2) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -174,7 +174,7 @@ final class EpochsTests: QuickSpec {
             }
 
             it("blocksAndPool"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getBlocksForEpochAndPool(number: 242, poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

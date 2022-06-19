@@ -26,7 +26,7 @@ final class NetworkTests: QuickSpec {
 
         describe("network") {
             it("get"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getNetwork { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

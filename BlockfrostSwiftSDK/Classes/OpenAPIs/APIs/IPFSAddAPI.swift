@@ -22,15 +22,23 @@ open class IPFSAddAPI: BaseService {
      - parameter completion: completion handler to receive the result
      */
     open func add(file: URL, apiResponseQueue: DispatchQueue? = nil, completion: @escaping (_ result: Swift.Result<IPFSObject, Error>) -> Void) -> APIRequest {
-        addWithRequestBuilder(file: file)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            addWithRequestBuilder(file: file)
+        }
+    }
+
+    /**
+     Add a file to IPFS
+
+     - returns: Add200Response
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func addAsync(
+            file: URL
+    ) async throws -> IPFSObject {
+        try await asyncWrapper { completion in
+            addWithRequestBuilder(file: file).execute { result in completion(result) }
+        }
     }
 
     /**

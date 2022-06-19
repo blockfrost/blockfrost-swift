@@ -9,6 +9,13 @@ import Foundation
 import MobileCoreServices
 #endif
 
+public protocol URLSessionProtocol {
+    func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask
+    func finishTasksAndInvalidate()
+}
+
+extension URLSession: URLSessionProtocol {}
+
 class URLSessionRequestBuilderFactory: RequestBuilderFactory {
     func getNonDecodableBuilder<T>() -> RequestBuilder<T>.Type {
         return URLSessionRequestBuilder<T>.self
@@ -19,8 +26,16 @@ class URLSessionRequestBuilderFactory: RequestBuilderFactory {
     }
 }
 
+public typealias BlockfrostSwiftAPIChallengeHandler = (URLSession, URLSessionTask, URLAuthenticationChallenge) -> (URLSession.AuthChallengeDisposition, URLCredential?)
+
+// Store current taskDidReceiveChallenge for every URLSessionTask
+private var challengeHandlerStore = SynchronizedDictionary<Int, BlockfrostSwiftAPIChallengeHandler>()
+
+// Store current URLCredential for every URLSessionTask
+private var credentialStore = SynchronizedDictionary<Int, URLCredential>()
+
 // Store the URLSession to retain its reference
-private var urlSessionStore = SynchronizedDictionary<String, URLSession>()
+private var urlSessionStore = SynchronizedDictionary<String, URLSessionProtocol>()
 
 open class APIURLRequest : APIRequest {
     public var dataTask: URLSessionDataTask? = nil
@@ -29,6 +44,13 @@ open class APIURLRequest : APIRequest {
         self.dataTask = dataTask
         super.init()
     }
+
+    @discardableResult
+    public override func cancel() -> Bool {
+        dataTask?.cancel()
+        dataTask = nil
+        return true
+    }
 }
 
 open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
@@ -36,7 +58,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
     /**
      May be assigned if you want to control the authentication challenges.
      */
-    public var taskDidReceiveChallenge: ((URLSession, URLSessionTask, URLAuthenticationChallenge) -> (URLSession.AuthChallengeDisposition, URLCredential?))?
+    public var taskDidReceiveChallenge: BlockfrostSwiftAPIChallengeHandler?
 
     /**
      May be assigned if you want to do any of those things:
@@ -47,7 +69,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
     //@available(*, deprecated, message: "Please override execute() method to intercept and handle errors like authorization or retry the request. Check the Wiki for more info. https://github.com/OpenAPITools/openapi-generator/wiki/FAQ#how-do-i-implement-bearer-token-authentication-with-urlsession-on-the-swift-api-client")
     public var taskCompletionShouldRetry: ((Data?, URLResponse?, Error?, @escaping (Bool) -> Void) -> Void)?
 
-    required public init(method: String, URLString: String, parameters: [String: Any]?, headers: [String: String] = [:], data: Data? = nil, config: BlockfrostConfig? = nil) {
+    public required init(method: String, URLString: String, parameters: [String: Any]?, headers: [String: String] = [:], data: Data? = nil, config: BlockfrostConfig? = nil) {
         super.init(method: method, URLString: URLString, parameters: parameters, headers: headers, data: data, config: config)
     }
     
@@ -55,7 +77,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
      May be overridden by a subclass if you want to control the URLSession
      configuration.
      */
-    open func createURLSession() -> URLSession {
+    open func createURLSession() -> URLSessionProtocol {
         let configuration = URLSessionConfiguration.default
         configuration.httpAdditionalHeaders = buildHeaders()
         configuration.headers.add(.userAgent("\(BlockfrostConfig.USER_AGENT)-\(BuildInfo.VERSION)"))
@@ -80,7 +102,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
      May be overridden by a subclass if you want to control the URLRequest
      configuration (e.g. to override the cache policy).
      */
-    open func createURLRequest(urlSession: URLSession, method: HTTPMethod, encoding: ParameterEncoding, headers: [String: String]) throws -> URLRequest {
+    open func createURLRequest(urlSession: URLSessionProtocol, method: HTTPMethod, encoding: ParameterEncoding, headers: [String: String]) throws -> URLRequest {
 
         guard let url = URL(string: URLString) else {
             throw DownloadException.requestMissingURL
@@ -107,8 +129,9 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
         return modifiedRequest
     }
 
-    override open func execute(_ apiResponseQueue: DispatchQueue? = nil,
-                               _ completion: @escaping (_ result: Swift.Result<Response<T>, Error>) -> Void) -> APIURLRequest {
+    @discardableResult
+    open override func execute(_ apiResponseQueue: DispatchQueue? = nil,
+                               _ completion: @escaping (_ result: Swift.Result<Response<T>, Error>) -> ()) -> APIURLRequest {
         let urlSessionId = UUID().uuidString
         // Create a new manager for each request to customize its request header
         let urlSession = createURLSession()
@@ -139,9 +162,14 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
             }
         }
 
+        var taskIdentifier: Int?
         let cleanupRequest = {
             urlSessionStore[urlSessionId]?.finishTasksAndInvalidate()
             urlSessionStore[urlSessionId] = nil
+            if let taskIdentifier = taskIdentifier {
+                challengeHandlerStore[taskIdentifier] = nil
+                credentialStore[taskIdentifier] = nil
+            }
         }
 
         do {
@@ -177,6 +205,10 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
             if #available(iOS 11.0, macOS 10.13, macCatalyst 13.0, tvOS 11.0, watchOS 4.0, *) {
                 onProgressReady?(dataTask.progress)
             }
+
+            taskIdentifier = dataTask.taskIdentifier
+            challengeHandlerStore[dataTask.taskIdentifier] = taskDidReceiveChallenge
+            credentialStore[dataTask.taskIdentifier] = credential
 
             dataTask.resume()
             return apiReq
@@ -295,7 +327,7 @@ open class URLSessionRequestBuilder<T>: RequestBuilder<T> {
 
             let filenameKey = "filename="
             guard let range = contentItem.range(of: filenameKey) else {
-                break
+                continue
             }
 
             filename = contentItem
@@ -354,7 +386,6 @@ open class URLSessionDecodableRequestBuilder<T: Decodable>: URLSessionRequestBui
 
         switch T.self {
         case is String.Type:
-
             let body = data.flatMap { String(data: $0, encoding: .utf8) } ?? ""
 
             completion(.success(Response<T>(response: httpResponse, body: body as? T)))
@@ -397,17 +428,19 @@ open class URLSessionDecodableRequestBuilder<T: Decodable>: URLSessionRequestBui
             }
 
         case is Void.Type:
-
             completion(.success(Response(response: httpResponse, body: nil)))
 
         case is Data.Type:
-
             completion(.success(Response(response: httpResponse, body: data as? T)))
 
         default:
-
             guard let data = data, !data.isEmpty else {
-                completion(.failure(ErrorResponse.error(httpResponse.statusCode, nil, response, DecodableRequestBuilderError.emptyDataResponse)))
+                if T.self is ExpressibleByNilLiteral.Type {
+                    completion(.success(Response(response: httpResponse, body: (T?.none!))))
+                } else {
+                    completion(.failure(ErrorResponse.error(httpResponse.statusCode, nil, response, DecodableRequestBuilderError.emptyDataResponse)))
+                }
+
                 return
             }
 
@@ -427,7 +460,7 @@ private class SessionDelegate: NSObject, URLSessionDelegate, URLSessionDataDeleg
 
     var credential: URLCredential?
 
-    var taskDidReceiveChallenge: ((URLSession, URLSessionTask, URLAuthenticationChallenge) -> (URLSession.AuthChallengeDisposition, URLCredential?))?
+    var taskDidReceiveChallenge: BlockfrostSwiftAPIChallengeHandler?
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
 
@@ -435,13 +468,13 @@ private class SessionDelegate: NSObject, URLSessionDelegate, URLSessionDataDeleg
 
         var credential: URLCredential?
 
-        if let taskDidReceiveChallenge = taskDidReceiveChallenge {
+        if let taskDidReceiveChallenge = taskDidReceiveChallenge ?? challengeHandlerStore[task.taskIdentifier] {
             (disposition, credential) = taskDidReceiveChallenge(session, task, challenge)
         } else {
             if challenge.previousFailureCount > 0 {
                 disposition = .rejectProtectionSpace
             } else {
-                credential = self.credential ?? session.configuration.urlCredentialStorage?.defaultCredential(for: challenge.protectionSpace)
+                credential = self.credential ?? credentialStore[task.taskIdentifier] ?? session.configuration.urlCredentialStorage?.defaultCredential(for: challenge.protectionSpace)
 
                 if credential != nil {
                     disposition = .useCredential
@@ -545,6 +578,14 @@ public class FormDataEncoding: ParameterEncoding {
                         data: data
                     )
                 }
+
+            case let data as Data:
+                urlRequest = configureDataUploadRequest(
+                    urlRequest: urlRequest,
+                    boundary: boundary,
+                    name: key,
+                    data: data
+                )
 
             default:
                 fatalError("Unprocessable value \(value) with key \(key)")

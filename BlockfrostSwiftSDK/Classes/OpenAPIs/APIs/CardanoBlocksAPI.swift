@@ -23,15 +23,24 @@ open class CardanoBlocksAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<BlockContent, Error>) -> Void
     ) -> APIRequest {
-        getBlockWithRequestBuilder(hashOrNumber: hashOrNumber)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getBlockWithRequestBuilder(hashOrNumber: hashOrNumber)
+        }
+    }
+
+    /**
+     Specific block
+
+     - parameter hashOrNumber: (path) Hash or number of the requested block.
+     - returns: BlockContent
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getBlockAsync(
+            hashOrNumber: String
+    ) async throws -> BlockContent {
+        try await asyncWrapper { completion in
+            getBlockWithRequestBuilder(hashOrNumber: hashOrNumber).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -76,15 +85,25 @@ open class CardanoBlocksAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<BlockContent, Error>) -> Void
     ) -> APIRequest {
-        getBlockInEpochInSlotWithRequestBuilder(epochNumber: epochNumber, slotNumber: slotNumber)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getBlockInEpochInSlotWithRequestBuilder(epochNumber: epochNumber, slotNumber: slotNumber)
+        }
+    }
+
+    /**
+     Specific block in a slot in an epoch
+
+     - parameter epochNumber: (path) Epoch for specific epoch slot.
+     - parameter slotNumber: (path) Slot position for requested block.
+     - returns: BlockContent
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getBlockInEpochInSlotAsync(
+            epochNumber: Int, slotNumber: Int
+    ) async throws -> BlockContent {
+        try await asyncWrapper { completion in
+            getBlockInEpochInSlotWithRequestBuilder(epochNumber: epochNumber, slotNumber: slotNumber).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -132,15 +151,24 @@ open class CardanoBlocksAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<BlockContent, Error>) -> Void
     ) -> APIRequest {
-        getBlockInSlotWithRequestBuilder(slotNumber: slotNumber)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getBlockInSlotWithRequestBuilder(slotNumber: slotNumber)
+        }
+    }
+
+    /**
+     Specific block in a slot
+
+     - parameter slotNumber: (path) Slot position for requested block.
+     - returns: BlockContent
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getBlockInSlotAsync(
+            slotNumber: Int
+    ) async throws -> BlockContent {
+        try await asyncWrapper { completion in
+            getBlockInSlotWithRequestBuilder(slotNumber: slotNumber).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -187,15 +215,9 @@ open class CardanoBlocksAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[String], Error>) -> Void
     ) -> APIRequest {
-        getBlockTransactionsWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getBlockTransactionsWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -220,6 +242,43 @@ open class CardanoBlocksAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Block transactions
+
+     - parameter hashOrNumber: (path) Hash of the requested block.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) Ordered by tx index in the block. The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [String]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getBlockTransactionsAsync(
+            hashOrNumber: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [String] {
+        try await asyncWrapper { completion in
+            getBlockTransactionsWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Block transactions. Fetches all paged records.
+
+     - parameter hashOrNumber: (path) Hash of the requested block.
+     - parameter order: (query) Ordered by tx index in the block. The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getBlockTransactionsAllAsync(
+            hashOrNumber: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [String] {
+        let loader = PageLoader<String>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getBlockTransactions(hashOrNumber: hashOrNumber, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -266,15 +325,23 @@ open class CardanoBlocksAPI: BaseService {
      - parameter completion: completion handler to receive the result
      */
     open func getLatestBlock(apiResponseQueue: DispatchQueue? = nil, completion: @escaping (_ result: Swift.Result<BlockContent, Error>) -> Void) -> APIRequest {
-        getLatestBlockWithRequestBuilder()
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getLatestBlockWithRequestBuilder()
+        }
+    }
+
+    /**
+     Latest block
+
+     - returns: BlockContent
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getLatestBlockAsync(
+
+    ) async throws -> BlockContent {
+        try await asyncWrapper { completion in
+            getLatestBlockWithRequestBuilder().execute { result in completion(result) }
+        }
     }
 
     /**
@@ -316,15 +383,9 @@ open class CardanoBlocksAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[BlockContent], Error>) -> Void
     ) -> APIRequest {
-        getNextBlocksWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getNextBlocksWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page)
+        }
     }
 
     /**
@@ -348,6 +409,40 @@ open class CardanoBlocksAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Listing of next blocks
+
+     - parameter hashOrNumber: (path) Hash of the requested block.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - returns: [BlockContent]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getNextBlocksAsync(
+            hashOrNumber: String, count: Int? = nil, page: Int? = nil
+    ) async throws -> [BlockContent] {
+        try await asyncWrapper { completion in
+            getNextBlocksWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page).execute { result in completion(result) }
+        }
+    }
+    /**
+    Listing of next blocks. Fetches all paged records.
+
+     - parameter hashOrNumber: (path) Hash of the requested block.
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getNextBlocksAllAsync(
+            hashOrNumber: String,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [BlockContent] {
+        let loader = PageLoader<BlockContent>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getNextBlocks(hashOrNumber: hashOrNumber, count: count, page: page, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -399,15 +494,9 @@ open class CardanoBlocksAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[BlockContent], Error>) -> Void
     ) -> APIRequest {
-        getPreviousBlocksWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getPreviousBlocksWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page)
+        }
     }
 
     /**
@@ -431,6 +520,41 @@ open class CardanoBlocksAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Listing of previous blocks
+
+     - parameter hashOrNumber: (path) Hash of the requested block
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - returns: [BlockContent]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getPreviousBlocksAsync(
+            hashOrNumber: String, count: Int? = nil, page: Int? = nil
+    ) async throws -> [BlockContent] {
+        try await asyncWrapper { completion in
+            getPreviousBlocksWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Listing of previous blocks. Fetches all paged records.
+
+     - parameter hashOrNumber: (path) Hash of the requested block
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getPreviousBlocksAllAsync(
+            hashOrNumber: String,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [BlockContent] {
+        let loader = PageLoader<BlockContent>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getPreviousBlocks(hashOrNumber: hashOrNumber, count: count, page: page, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -482,15 +606,9 @@ open class CardanoBlocksAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[String], Error>) -> Void
     ) -> APIRequest {
-        getTransactionsInLatestBlockWithRequestBuilder(count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionsInLatestBlockWithRequestBuilder(count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -514,6 +632,41 @@ open class CardanoBlocksAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Latest block transactions
+
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) Ordered by tx index in the block. The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [String]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionsInLatestBlockAsync(
+            count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [String] {
+        try await asyncWrapper { completion in
+            getTransactionsInLatestBlockWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Latest block transactions. Fetches all paged records.
+
+     - parameter order: (query) Ordered by tx index in the block. The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getTransactionsInLatestBlockAllAsync(
+            order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [String] {
+        let loader = PageLoader<String>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getTransactionsInLatestBlock(count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**

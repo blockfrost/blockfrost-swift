@@ -29,7 +29,7 @@ final class PoolsTests: QuickSpec {
 
         describe("pools") {
             it("retiring"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getRetiringPools { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -42,7 +42,7 @@ final class PoolsTests: QuickSpec {
             }
 
             it("retired"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getRetiredPools { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -56,7 +56,7 @@ final class PoolsTests: QuickSpec {
             }
 
             it("all"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getPools { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -70,7 +70,7 @@ final class PoolsTests: QuickSpec {
             }
 
             it("byId"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getPool(poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -93,7 +93,7 @@ final class PoolsTests: QuickSpec {
             }
 
             it("history"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getPoolHistory(poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -107,7 +107,7 @@ final class PoolsTests: QuickSpec {
             }
 
             it("metadata"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getPoolMetadata(poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -121,7 +121,7 @@ final class PoolsTests: QuickSpec {
             }
 
             it("delegators"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getPoolDelegators(poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -135,7 +135,7 @@ final class PoolsTests: QuickSpec {
             }
 
             it("relays"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getPoolRelays(poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -149,7 +149,7 @@ final class PoolsTests: QuickSpec {
             }
 
             it("blocks"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getPoolBlocks(poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy", count: 10) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -163,7 +163,7 @@ final class PoolsTests: QuickSpec {
             }
 
             it("updates"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getPoolUpdates(poolId: "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy", count: 10) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

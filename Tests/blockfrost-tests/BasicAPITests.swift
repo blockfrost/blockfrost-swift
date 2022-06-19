@@ -33,7 +33,7 @@ final class BasicAPITests: QuickSpec {
                 mock.register()
 
                 api = CardanoAccountsAPI(config: cfg)
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountByStakeAddress(stakeAddress: stakeAddr) { resp in
                         switch (resp) {
                         case let .failure(err):
@@ -58,7 +58,7 @@ final class BasicAPITests: QuickSpec {
                 mock.register()
 
                 api = CardanoAccountsAPI(config: cfg)
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountByStakeAddress(stakeAddress: stakeAddr) { resp in
                         switch (resp) {
                         case let .failure(err):
@@ -84,7 +84,7 @@ final class BasicAPITests: QuickSpec {
                 mock.register()
 
                 api = CardanoAccountsAPI(config: cfg)
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountByStakeAddress(stakeAddress: stakeAddr) { resp in
                         switch (resp) {
                         case let .failure(err):
@@ -121,7 +121,7 @@ final class BasicAPITests: QuickSpec {
                 mock.register()
 
                 api = CardanoAccountsAPI(config: cfg)
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountByStakeAddress(stakeAddress: stakeAddr) { resp in
                         done()
                     }
@@ -138,7 +138,7 @@ final class BasicAPITests: QuickSpec {
                 mock.register()
 
                 let napi = NutLinkAPI(config: cfg)
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = napi.getTickerRecordsByTicker(ticker: "ADAUSD") { resp in
                         switch (resp) {
                         case let .failure(err):
@@ -192,7 +192,7 @@ final class BasicAPITests: QuickSpec {
                 mockRl.register()
 
                 api = CardanoAccountsAPI(config: cfg)
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountByStakeAddress(stakeAddress: stakeAddr) { resp in
                         switch (resp) {
                         case let .failure(err):
@@ -218,7 +218,7 @@ final class BasicAPITests: QuickSpec {
                 mockRl.register()
 
                 api = CardanoAccountsAPI(config: cfg)
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAccountByStakeAddress(stakeAddress: stakeAddr) { resp in
                         switch (resp) {
                         case let .failure(err):

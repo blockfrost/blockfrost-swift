@@ -30,7 +30,7 @@ final class ScriptsTests: QuickSpec {
 
         describe("scripts") {
             it("all"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getScripts(count: 10) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -46,7 +46,7 @@ final class ScriptsTests: QuickSpec {
             }
 
             it("byHash"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getScript(scriptHash: scriptHash) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -59,7 +59,7 @@ final class ScriptsTests: QuickSpec {
             }
 
             it("redeemers"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getScriptRedeemers(scriptHash: scriptHash) { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

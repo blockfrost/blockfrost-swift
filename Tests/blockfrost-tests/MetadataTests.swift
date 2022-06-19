@@ -30,7 +30,7 @@ final class MetadataTests: QuickSpec {
 
         describe("metadata") {
             it("labels"){
-                waitUntil(timeout: 20) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT_MEDIUM) { done in
                     let _ = api.getTransactionMetadataLabels { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -43,7 +43,7 @@ final class MetadataTests: QuickSpec {
             }
 
             it("txsLabelCbor"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getTransactionMetadataCborForLabel(label: "1968") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -58,7 +58,7 @@ final class MetadataTests: QuickSpec {
             }
 
             it("txsLabel"){
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getTransactionMetadataJsonForLabel(label: "1968") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

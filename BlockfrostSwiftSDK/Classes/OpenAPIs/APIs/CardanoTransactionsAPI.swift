@@ -31,15 +31,24 @@ open class CardanoTransactionsAPI : BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<TxContent, Error>) -> Void
     ) -> APIRequest {
-        getTransactionWithRequestBuilder(hash: hash)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionWithRequestBuilder(hash: hash)
+        }
+    }
+
+    /**
+     Specific transaction
+
+     - parameter hash: (path) Hash of the requested transaction
+     - returns: TxContent
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionAsync(
+            hash: String
+    ) async throws -> TxContent {
+        try await asyncWrapper { completion in
+            getTransactionWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -83,15 +92,24 @@ open class CardanoTransactionsAPI : BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[TxContentDelegation], Error>) -> Void
     ) -> APIRequest {
-        getTransactionDelegationsWithRequestBuilder(hash: hash)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionDelegationsWithRequestBuilder(hash: hash)
+        }
+    }
+
+    /**
+     Transaction delegation certificates
+
+     - parameter hash: (path) Hash of the requested transaction.
+     - returns: [TxContentDelegations]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionDelegationsAsync(
+            hash: String
+    ) async throws -> [TxContentDelegation] {
+        try await asyncWrapper { completion in
+            getTransactionDelegationsWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -135,15 +153,24 @@ open class CardanoTransactionsAPI : BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[TxContentMetadata], Error>) -> Void
     ) -> APIRequest {
-        getTransactionMetadataWithRequestBuilder(hash: hash)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionMetadataWithRequestBuilder(hash: hash)
+        }
+    }
+
+    /**
+     Transaction metadata
+
+     - parameter hash: (path) Hash of the requested transaction
+     - returns: [TxContentMetadata]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionMetadataAsync(
+            hash: String
+    ) async throws -> [TxContentMetadata] {
+        try await asyncWrapper { completion in
+            getTransactionMetadataWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -187,15 +214,24 @@ open class CardanoTransactionsAPI : BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[TxContentMetadataCbor], Error>) -> Void
     ) -> APIRequest {
-        getTransactionMetadataCborWithRequestBuilder(hash: hash)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionMetadataCborWithRequestBuilder(hash: hash)
+        }
+    }
+
+    /**
+     Transaction metadata in CBOR
+
+     - parameter hash: (path) Hash of the requested transaction
+     - returns: [TxContentMetadataCbor]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionMetadataCborAsync(
+            hash: String
+    ) async throws -> [TxContentMetadataCbor] {
+        try await asyncWrapper { completion in
+            getTransactionMetadataCborWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -239,15 +275,24 @@ open class CardanoTransactionsAPI : BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[TxContentMir], Error>) -> Void
     ) -> APIRequest {
-        getTransactionMirsWithRequestBuilder(hash: hash)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionMirsWithRequestBuilder(hash: hash)
+        }
+    }
+
+    /**
+     Transaction MIRs
+
+     - parameter hash: (path) Hash of the requested transaction.
+     - returns: [TxContentMirs]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionMirsAsync(
+            hash: String
+    ) async throws -> [TxContentMir] {
+        try await asyncWrapper { completion in
+            getTransactionMirsWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -291,15 +336,24 @@ open class CardanoTransactionsAPI : BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[TxContentPoolRetir], Error>) -> Void
     ) -> APIRequest {
-        getTransactionPoolRetiresWithRequestBuilder(hash: hash)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionPoolRetiresWithRequestBuilder(hash: hash)
+        }
+    }
+
+    /**
+     Transaction stake pool retirement certificates
+
+     - parameter hash: (path) Hash of the requested transaction
+     - returns: [TxContentPoolRetires]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionPoolRetiresAsync(
+            hash: String
+    ) async throws -> [TxContentPoolRetir] {
+        try await asyncWrapper { completion in
+            getTransactionPoolRetiresWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -343,15 +397,24 @@ open class CardanoTransactionsAPI : BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[TxContentPoolCert], Error>) -> Void
     ) -> APIRequest {
-        getTransactionPoolUpdatesWithRequestBuilder(hash: hash)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionPoolUpdatesWithRequestBuilder(hash: hash)
+        }
+    }
+
+    /**
+     Transaction stake pool registration and update certificates
+
+     - parameter hash: (path) Hash of the requested transaction
+     - returns: [TxContentPoolCerts]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionPoolUpdatesAsync(
+            hash: String
+    ) async throws -> [TxContentPoolCert] {
+        try await asyncWrapper { completion in
+            getTransactionPoolUpdatesWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -395,15 +458,24 @@ open class CardanoTransactionsAPI : BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[TxContentRedeemer], Error>) -> Void
     ) -> APIRequest {
-        getTransactionRedeemersWithRequestBuilder(hash: hash)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionRedeemersWithRequestBuilder(hash: hash)
+        }
+    }
+
+    /**
+     Transaction redeemers
+
+     - parameter hash: (path) Hash of the requested transaction
+     - returns: [TxContentRedeemers]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionRedeemersAsync(
+            hash: String
+    ) async throws -> [TxContentRedeemer] {
+        try await asyncWrapper { completion in
+            getTransactionRedeemersWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -447,15 +519,24 @@ open class CardanoTransactionsAPI : BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[TxContentStakeAddr], Error>) -> Void
     ) -> APIRequest {
-        getTransactionStakesWithRequestBuilder(hash: hash)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionStakesWithRequestBuilder(hash: hash)
+        }
+    }
+
+    /**
+     Transaction stake addresses certificates
+
+     - parameter hash: (path) Hash of the requested transaction.
+     - returns: [TxContentStakeAddr]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionStakesAsync(
+            hash: String
+    ) async throws -> [TxContentStakeAddr] {
+        try await asyncWrapper { completion in
+            getTransactionStakesWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -499,15 +580,24 @@ open class CardanoTransactionsAPI : BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<TxContentUtxo, Error>) -> Void
     ) -> APIRequest {
-        getTransactionUtxosWithRequestBuilder(hash: hash)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionUtxosWithRequestBuilder(hash: hash)
+        }
+    }
+
+    /**
+     Transaction UTXOs
+
+     - parameter hash: (path) Hash of the requested transaction
+     - returns: TxContentUtxo
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionUtxosAsync(
+            hash: String
+    ) async throws -> TxContentUtxo {
+        try await asyncWrapper { completion in
+            getTransactionUtxosWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -551,15 +641,24 @@ open class CardanoTransactionsAPI : BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[TxContentWithdrawal], Error>) -> Void
     ) -> APIRequest {
-        getTransactionWithdrawalsWithRequestBuilder(hash: hash)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getTransactionWithdrawalsWithRequestBuilder(hash: hash)
+        }
+    }
+
+    /**
+     Transaction withdrawal
+
+     - parameter hash: (path) Hash of the requested transaction.
+     - returns: [TxContentWithdrawals]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getTransactionWithdrawalsAsync(
+            hash: String
+    ) async throws -> [TxContentWithdrawal] {
+        try await asyncWrapper { completion in
+            getTransactionWithdrawalsWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -604,15 +703,25 @@ open class CardanoTransactionsAPI : BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<String, Error>) -> Void
     ) -> APIRequest {
-        submitTransactionWithRequestBuilder(transaction: transaction, contentType: contentType)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            submitTransactionWithRequestBuilder(transaction: transaction, contentType: contentType)
+        }
+    }
+
+    /**
+     Submit a transaction
+
+     - parameter contentType: (header)
+     - returns: String
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func submitTransactionAsync(
+            transaction: Data,
+            contentType: ContentType_txSubmitPost = .applicationCbor
+    ) async throws -> String {
+        try await asyncWrapper { completion in
+            submitTransactionWithRequestBuilder(transaction: transaction, contentType: contentType).execute { result in completion(result) }
+        }
     }
 
     /**

@@ -5,7 +5,7 @@
 
 <br/>
 
-<p align="center">Swift 5 SDK for <a href="https://blockfrost.io">Blockfrost.io</a> API.</p>
+<p align="center">Swift 5.7 SDK for <a href="https://blockfrost.io">Blockfrost.io</a> API.</p>
 <p align="center">
   <a href="#installation">Installation</a> •
   <a href="#usage">Usage</a> •
@@ -18,7 +18,7 @@
 ### Swift package manager
 ```
 dependencies: [
-    .package(url: "https://github.com/blockfrost/blockfrost-swift.git", from: "0.0.7"),
+    .package(url: "https://github.com/blockfrost/blockfrost-swift.git", from: "1.0.0"),
 ],
 
 targets: [
@@ -36,7 +36,7 @@ Run `carthage update`
 
 Cartfile
 ```
-github "blockfrost/blockfrost-swift" ~> 0.0.7
+github "blockfrost/blockfrost-swift" ~> 1.0.0
 ```
 
 ### CocoaPods
@@ -46,12 +46,12 @@ Run `pod install`
        
 Podfile:
 ```
-pod 'BlockfrostSwiftSDK', '~> 0.0.7'
+pod 'BlockfrostSwiftSDK', '~> 1.0.0'
 ```
 
 Or use GitHub, by tag:
 ```
-pod 'BlockfrostSwiftSDK', :git => 'https://github.com/blockfrost/blockfrost-swift.git', :tag => '0.0.7'
+pod 'BlockfrostSwiftSDK', :git => 'https://github.com/blockfrost/blockfrost-swift.git', :tag => '1.0.0'
 ```
 
 or by branch:
@@ -61,7 +61,9 @@ pod 'BlockfrostSwiftSDK', :git => 'https://github.com/blockfrost/blockfrost-swif
 
 ## Usage
       
-API uses a simple completion callbacks, returning `Swift.Result<R, Error>`, where `R` is defined by the particular API call. 
+API provides the following call approaches:
+- a simple completion callbacks, returning `Swift.Result<R, Error>`, where `R` is defined by a particular API call.
+- [async-await](https://docs.swift.org/swift-book/LanguageGuide/Concurrency.html) oriented calls 
 
 ```swift
 // import the SDK on the beginning of the file
@@ -83,6 +85,16 @@ _ = api.getAddressDetails(address: "addr1q8zu4smzyf2r2mfqjd6tc6vxf2p8rccdfk82ye3
     }
 }
 ```
+
+Async-await interface:
+```swift
+do {
+    let result = try await getAddressDetailsAsync()
+} catch let error {
+    // handle error
+}
+```
+
         
 Project ID can be loaded from env
 ```swift

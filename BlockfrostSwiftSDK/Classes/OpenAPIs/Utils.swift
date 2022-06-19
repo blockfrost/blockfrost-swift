@@ -7,9 +7,6 @@
 
 import Foundation
 import Alamofire
-//import PromiseKit
-//import AwaitKit
-//import SwiftCoroutine
 
 final class Atomic<A> {
     private let queue = DispatchQueue(label: "Atomic serial queue")
@@ -102,30 +99,6 @@ class ConcurrentQueue<A> {
     }
 }
 
-//extension OperationQueue: CoroutineScheduler {
-//    public func scheduleTask(_ task: @escaping () -> Void) {
-//        addOperation(task)
-//    }
-//}
-//
-//func resolveWith<A>(_ res: A, scope: CoScope? = nil) -> CoPromise<A> {
-//    let p = CoPromise<A>()
-//    if let sc = scope {
-//        p.added(to: sc)
-//    }
-//    p.complete(with: Swift.Result<A, Error>.success(res))
-//    return p
-//}
-//
-//func failWith<A, E: Error>(_ err: E, scope: CoScope? = nil) -> CoPromise<A> {
-//    let p = CoPromise<A>()
-//    if let sc = scope {
-//        p.added(to: sc)
-//    }
-//    p.complete(with: Swift.Result<A, E>.failure(err))
-//    return p
-//}
-
 func runNoExcLog(_ msg: String? = nil, task: @escaping () throws -> ()) {
     do {
         try task()
@@ -151,17 +124,4 @@ func lockedThrow<T>(_ lock: NSLocking, closure: @escaping () throws -> T) throws
     defer { lock.unlock() }
     return try closure()
 }
-
-//func str2byte(_ str: String) -> [UInt8] {
-//    return str.replacingOccurrences(of: " ", with: "").hexToBytes
-//}
-
-//extension PromiseKit.Result where Failure == Error {
-//    public func throwOnError() throws -> Void {
-//        if case .failure(let e) = self {
-//            throw e
-//        }
-//    }
-//}
-
 

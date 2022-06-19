@@ -23,7 +23,7 @@ class AssetsTests: QuickSpec {
             }
 
             it("all") {
-                waitUntil(timeout: 20) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAssets() { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -35,7 +35,7 @@ class AssetsTests: QuickSpec {
             }
 
             it("by id") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     let _ = api.getAsset(asset: "b863bc7369f46136ac1048adb2fa7dae3af944c3bbb2be2f216a8d4f42657272795361707068697265") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -62,7 +62,7 @@ class AssetsTests: QuickSpec {
             }
             
             it("history") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     _ = api.getAssetHistory(asset: "00000002df633853f6a47465c9496721d2d5b1291b8398016c0e87ae6e7574636f696e") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -77,7 +77,7 @@ class AssetsTests: QuickSpec {
 
             it("historyAll") {
                 BlockfrostConfig.DEFAULT_COUNT = 100
-                waitUntil(timeout: 120) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT_LOADER) { done in
                     let _ = api.getAssetHistoryAll(asset: "d894897411707efa755a76deb66d26dfd50593f2e70863e1661e98a07370616365636f696e73") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -96,7 +96,7 @@ class AssetsTests: QuickSpec {
             }
 
             it("transactions") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     _ = api.getAssetTransactions(asset: "00000002df633853f6a47465c9496721d2d5b1291b8398016c0e87ae6e7574636f696e") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -110,7 +110,7 @@ class AssetsTests: QuickSpec {
             }
 
             it("addresses") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     _ = api.getAssetAddresses(asset: "00000002df633853f6a47465c9496721d2d5b1291b8398016c0e87ae6e7574636f696e") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;
@@ -124,7 +124,7 @@ class AssetsTests: QuickSpec {
             }
 
             it("policy") {
-                waitUntil(timeout: 10) { done in
+                waitUntil(timeout: TestConsts.TIMEOUT) { done in
                     _ = api.getPolicyAssets(policyId: "b863bc7369f46136ac1048adb2fa7dae3af944c3bbb2be2f216a8d4f") { resp in
                         guard let r = TestUtils.getResult(resp: resp) else {
                             done(); return;

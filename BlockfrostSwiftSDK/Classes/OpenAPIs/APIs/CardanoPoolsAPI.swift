@@ -23,15 +23,24 @@ open class CardanoPoolsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<Pool, Error>) -> Void
     ) -> APIRequest {
-        getPoolWithRequestBuilder(poolId: poolId)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getPoolWithRequestBuilder(poolId: poolId)
+        }
+    }
+
+    /**
+     Specific stake pool
+
+     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
+     - returns: Pool
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getPoolAsync(
+            poolId: String
+    ) async throws -> Pool {
+        try await asyncWrapper { completion in
+            getPoolWithRequestBuilder(poolId: poolId).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -78,15 +87,9 @@ open class CardanoPoolsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[String], Error>) -> Void
     ) -> APIRequest {
-        getPoolBlocksWithRequestBuilder(poolId: poolId, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getPoolBlocksWithRequestBuilder(poolId: poolId, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -111,6 +114,43 @@ open class CardanoPoolsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Stake pool blocks
+
+     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [String]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getPoolBlocksAsync(
+            poolId: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [String] {
+        try await asyncWrapper { completion in
+            getPoolBlocksWithRequestBuilder(poolId: poolId, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+
+    /**
+    Stake pool blocks. Fetches all paged records.
+
+     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getPoolBlocksAllAsync(
+            poolId: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [String] {
+        let loader = PageLoader<String>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getPoolBlocks(poolId: poolId, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -165,15 +205,9 @@ open class CardanoPoolsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[PoolDelegator], Error>) -> Void
     ) -> APIRequest {
-        getPoolDelegatorsWithRequestBuilder(poolId: poolId, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getPoolDelegatorsWithRequestBuilder(poolId: poolId, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -198,6 +232,43 @@ open class CardanoPoolsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Stake pool delegators
+
+     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [PoolDelegators]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getPoolDelegatorsAsync(
+            poolId: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [PoolDelegator] {
+        try await asyncWrapper { completion in
+            getPoolDelegatorsWithRequestBuilder(poolId: poolId, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Stake pool delegators. Fetches all paged records.
+
+     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getPoolDelegatorsAllAsync(
+            poolId: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [PoolDelegator] {
+        let loader = PageLoader<PoolDelegator>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getPoolDelegators(poolId: poolId, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -252,15 +323,9 @@ open class CardanoPoolsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[PoolHistory], Error>) -> Void
     ) -> APIRequest {
-        getPoolHistoryWithRequestBuilder(poolId: poolId, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getPoolHistoryWithRequestBuilder(poolId: poolId, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -285,6 +350,43 @@ open class CardanoPoolsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Stake pool history
+
+     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [PoolHistory]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getPoolHistoryAsync(
+            poolId: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [PoolHistory] {
+        try await asyncWrapper { completion in
+            getPoolHistoryWithRequestBuilder(poolId: poolId, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Stake pool history. Fetches all paged records.
+
+     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getPoolHistoryAllAsync(
+            poolId: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [PoolHistory] {
+        let loader = PageLoader<PoolHistory>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getPoolHistory(poolId: poolId, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -336,15 +438,24 @@ open class CardanoPoolsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<PoolMetadata?, Error>) -> Void
     ) -> APIRequest {
-        getPoolMetadataWithRequestBuilder(poolId: poolId)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getPoolMetadataWithRequestBuilder(poolId: poolId)
+        }
+    }
+
+    /**
+     Stake pool metadata
+
+     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
+     - returns: GetPoolMetadata200Response
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getPoolMetadataAsync(
+            poolId: String
+    ) async throws -> PoolMetadata? {
+        try await asyncWrapper { completion in
+            getPoolMetadataWithRequestBuilder(poolId: poolId).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -388,15 +499,24 @@ open class CardanoPoolsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[PoolRelay], Error>) -> Void
     ) -> APIRequest {
-        getPoolRelaysWithRequestBuilder(poolId: poolId)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getPoolRelaysWithRequestBuilder(poolId: poolId)
+        }
+    }
+
+    /**
+     Stake pool relays
+
+     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
+     - returns: [TxContentPoolCertsInnerRelays]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getPoolRelaysAsync(
+            poolId: String
+    ) async throws -> [PoolRelay] {
+        try await asyncWrapper { completion in
+            getPoolRelaysWithRequestBuilder(poolId: poolId).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -443,15 +563,9 @@ open class CardanoPoolsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[PoolUpdate], Error>) -> Void
     ) -> APIRequest {
-        getPoolUpdatesWithRequestBuilder(poolId: poolId, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getPoolUpdatesWithRequestBuilder(poolId: poolId, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -476,6 +590,43 @@ open class CardanoPoolsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Stake pool updates
+
+     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [PoolUpdates]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getPoolUpdatesAsync(
+            poolId: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [PoolUpdate] {
+        try await asyncWrapper { completion in
+            getPoolUpdatesWithRequestBuilder(poolId: poolId, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+
+    /**
+    Stake pool updates. Fetches all paged records.
+
+     - parameter poolId: (path) Bech32 or hexadecimal pool ID.
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getPoolUpdatesAllAsync(
+            poolId: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [PoolUpdate] {
+        let loader = PageLoader<PoolUpdate>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getPoolUpdates(poolId: poolId, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -529,15 +680,9 @@ open class CardanoPoolsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[String], Error>) -> Void
     ) -> APIRequest {
-        getPoolsWithRequestBuilder(count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getPoolsWithRequestBuilder(count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -562,6 +707,42 @@ open class CardanoPoolsAPI: BaseService {
         })
         return APILoaderRequest(loader: loader)
     }
+
+    /**
+     List of stake pools
+
+     - parameter count: (query) The numbers of pools per page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [String]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getPoolsAsync(
+            count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [String] {
+        try await asyncWrapper { completion in
+            getPoolsWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    List of stake pools. Fetches all paged records.
+
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getPoolsAllAsync(
+            order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [String] {
+        let loader = PageLoader<String>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getPools(count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
+    }
+
 
     /**
      List of stake pools
@@ -610,15 +791,9 @@ open class CardanoPoolsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[PoolListRetire], Error>) -> Void
     ) -> APIRequest {
-        getRetiredPoolsWithRequestBuilder(count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getRetiredPoolsWithRequestBuilder(count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -642,6 +817,41 @@ open class CardanoPoolsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     List of retired stake pools
+
+     - parameter count: (query) The numbers of pools per page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [PoolListRetire]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getRetiredPoolsAsync(
+            count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [PoolListRetire] {
+        try await asyncWrapper { completion in
+            getRetiredPoolsWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+
+    /**
+    List of retired stake pools. Fetches all paged records.
+
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getRetiredPoolsAllAsync(
+            order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [PoolListRetire] {
+        let loader = PageLoader<PoolListRetire>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getRetiredPools(count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -691,15 +901,9 @@ open class CardanoPoolsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[PoolListRetire], Error>) -> Void
     ) -> APIRequest {
-        getRetiringPoolsWithRequestBuilder(count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getRetiringPoolsWithRequestBuilder(count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -724,6 +928,42 @@ open class CardanoPoolsAPI: BaseService {
         })
         return APILoaderRequest(loader: loader)
     }
+
+    /**
+     List of retiring stake pools
+
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [PoolListRetire]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getRetiringPoolsAsync(
+            count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [PoolListRetire] {
+        try await asyncWrapper { completion in
+            getRetiringPoolsWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    List of retiring stake pools. Fetches all paged records.
+
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getRetiringPoolsAllAsync(
+            order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [PoolListRetire] {
+        let loader = PageLoader<PoolListRetire>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getRetiringPools(count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
+    }
+
 
     /**
      List of retiring stake pools

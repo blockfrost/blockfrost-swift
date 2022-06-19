@@ -27,15 +27,24 @@ open class IPFSGatewayAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<Data, Error>) -> Void
     ) -> APIRequest {
-        callGetWithRequestBuilder(iPFSPath: iPFSPath)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            callGetWithRequestBuilder(iPFSPath: iPFSPath)
+        }
+    }
+
+    /**
+     Relay to an IPFS gateway
+
+     - parameter iPFSPath: (path)
+     - returns: Void
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func callGetAsync(
+            iPFSPath: String
+    ) async throws {
+        try await asyncWrapper { completion in
+            callGetWithRequestBuilder(iPFSPath: iPFSPath).execute { result in completion(result) }
+        }
     }
 
     /**

@@ -25,15 +25,9 @@ open class CardanoEpochsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[EpochStakeContent], Error>) -> Void
     ) -> APIRequest {
-        getActiveStakesForEpochWithRequestBuilder(number: number, count: count, page: page)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getActiveStakesForEpochWithRequestBuilder(number: number, count: count, page: page)
+        }
     }
 
     /**
@@ -57,6 +51,41 @@ open class CardanoEpochsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Stake distribution
+
+     - parameter number: (path) Number of the epoch
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - returns: [EpochStakeContent]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getActiveStakesForEpochAsync(
+            number: Int, count: Int? = nil, page: Int? = nil
+    ) async throws -> [EpochStakeContent] {
+        try await asyncWrapper { completion in
+            getActiveStakesForEpochWithRequestBuilder(number: number, count: count, page: page).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Stake distribution. Fetches all paged records.
+
+     - parameter number: (path) Number of the epoch
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getActiveStakesForEpochAllAsync(
+            number: Int,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [EpochStakeContent] {
+        let loader = PageLoader<EpochStakeContent>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getActiveStakesForEpoch(number: number, count: count, page: page, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -109,15 +138,9 @@ open class CardanoEpochsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[EpochStakePoolContent], Error>) -> Void
     ) -> APIRequest {
-        getActiveStakesForEpochAndPoolWithRequestBuilder(number: number, poolId: poolId, count: count, page: page)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getActiveStakesForEpochAndPoolWithRequestBuilder(number: number, poolId: poolId, count: count, page: page)
+        }
     }
 
     /**
@@ -143,6 +166,44 @@ open class CardanoEpochsAPI: BaseService {
         })
         return APILoaderRequest(loader: loader)
     }
+
+    /**
+     Stake distribution by pool
+
+     - parameter number: (path) Number of the epoch
+     - parameter poolId: (path) Stake pool ID to filter
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - returns: [EpochStakePoolContent]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getActiveStakesForEpochAndPoolAsync(
+            number: Int, poolId: String, count: Int? = nil, page: Int? = nil
+    ) async throws -> [EpochStakePoolContent] {
+        try await asyncWrapper { completion in
+            getActiveStakesForEpochAndPoolWithRequestBuilder(number: number, poolId: poolId, count: count, page: page).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Stake distribution by pool. Fetches all paged records.
+
+     - parameter number: (path) Number of the epoch
+     - parameter poolId: (path) Stake pool ID to filter
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getActiveStakesForEpochAndPoolAllAsync(
+            number: Int, poolId: String,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [EpochStakePoolContent] {
+        let loader = PageLoader<EpochStakePoolContent>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getActiveStakesForEpochAndPool(number: number, poolId: poolId, count: count, page: page, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
+    }
+
 
     /**
      Stake distribution by pool
@@ -198,15 +259,9 @@ open class CardanoEpochsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[String], Error>) -> Void
     ) -> APIRequest {
-        getBlocksForEpochWithRequestBuilder(number: number, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getBlocksForEpochWithRequestBuilder(number: number, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -231,6 +286,43 @@ open class CardanoEpochsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Block distribution
+
+     - parameter number: (path) Number of the epoch
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [String]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getBlocksForEpochAsync(
+            number: Int, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [String] {
+        try await asyncWrapper { completion in
+            getBlocksForEpochWithRequestBuilder(number: number, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Block distribution. Fetches all paged records.
+
+     - parameter number: (path) Number of the epoch
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getBlocksForEpochAllAsync(
+            number: Int, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [String] {
+        let loader = PageLoader<String>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getBlocksForEpoch(number: number, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -286,15 +378,9 @@ open class CardanoEpochsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[String], Error>) -> Void
     ) -> APIRequest {
-        getBlocksForEpochAndPoolWithRequestBuilder(number: number, poolId: poolId, count: count, page: page, order: order)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getBlocksForEpochAndPoolWithRequestBuilder(number: number, poolId: poolId, count: count, page: page, order: order)
+        }
     }
 
     /**
@@ -320,6 +406,45 @@ open class CardanoEpochsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Block distribution by pool
+
+     - parameter number: (path) Number of the epoch
+     - parameter poolId: (path) Stake pool ID to filter
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - returns: [String]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getBlocksForEpochAndPoolAsync(
+            number: Int, poolId: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
+    ) async throws -> [String] {
+        try await asyncWrapper { completion in
+            getBlocksForEpochAndPoolWithRequestBuilder(number: number, poolId: poolId, count: count, page: page, order: order).execute { result in completion(result) }
+        }
+    }
+
+    /**
+    Block distribution by pool. Fetches all paged records.
+
+     - parameter number: (path) Number of the epoch
+     - parameter poolId: (path) Stake pool ID to filter
+     - parameter order: (query) The ordering of items from the point of view of the blockchain, not the page listing itself. By default, we return oldest first, newest last.  (optional, default to .asc)
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getBlocksForEpochAndPoolAllAsync(
+            number: Int, poolId: String, order: SortOrder? = nil,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [String] {
+        let loader = PageLoader<String>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getBlocksForEpochAndPool(number: number, poolId: poolId, count: count, page: page, order: order, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -375,15 +500,24 @@ open class CardanoEpochsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<EpochContent, Error>) -> Void
     ) -> APIRequest {
-        getEpochWithRequestBuilder(number: number)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getEpochWithRequestBuilder(number: number)
+        }
+    }
+
+    /**
+     Specific epoch
+
+     - parameter number: (path) Number of the epoch
+     - returns: EpochContent
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getEpochAsync(
+            number: Int
+    ) async throws -> EpochContent {
+        try await asyncWrapper { completion in
+            getEpochWithRequestBuilder(number: number).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -427,15 +561,24 @@ open class CardanoEpochsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<EpochParamContent, Error>) -> Void
     ) -> APIRequest {
-        getEpochParamWithRequestBuilder(number: number)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getEpochParamWithRequestBuilder(number: number)
+        }
+    }
+
+    /**
+     Protocol parameters
+
+     - parameter number: (path) Number of the epoch
+     - returns: EpochParamContent
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getEpochParamAsync(
+            number: Int
+    ) async throws -> EpochParamContent {
+        try await asyncWrapper { completion in
+            getEpochParamWithRequestBuilder(number: number).execute { result in completion(result) }
+        }
     }
 
     /**
@@ -474,15 +617,23 @@ open class CardanoEpochsAPI: BaseService {
      - parameter completion: completion handler to receive the result
      */
     open func getLatestEpoch(apiResponseQueue: DispatchQueue? = nil, completion: @escaping (_ result: Swift.Result<EpochContent, Error>) -> Void) -> APIRequest {
-        getLatestEpochWithRequestBuilder()
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getLatestEpochWithRequestBuilder()
+        }
+    }
+
+    /**
+     Latest epoch
+
+     - returns: EpochContent
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getLatestEpochAsync(
+
+    ) async throws -> EpochContent {
+        try await asyncWrapper { completion in
+            getLatestEpochWithRequestBuilder().execute { result in completion(result) }
+        }
     }
 
     /**
@@ -517,15 +668,23 @@ open class CardanoEpochsAPI: BaseService {
      - parameter completion: completion handler to receive the result
      */
     open func getLatestEpochParam(apiResponseQueue: DispatchQueue? = nil, completion: @escaping (_ result: Swift.Result<EpochParamContent, Error>) -> Void) -> APIRequest {
-        getLatestEpochParamWithRequestBuilder()
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getLatestEpochParamWithRequestBuilder()
+        }
+    }
+
+    /**
+     Latest epoch protocol parameters
+
+     - returns: EpochParamContent
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getLatestEpochParamAsync(
+
+    ) async throws -> EpochParamContent {
+        try await asyncWrapper { completion in
+            getLatestEpochParamWithRequestBuilder().execute { result in completion(result) }
+        }
     }
 
     /**
@@ -567,15 +726,9 @@ open class CardanoEpochsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[EpochContent], Error>) -> Void
     ) -> APIRequest {
-        getNextEpochsWithRequestBuilder(number: number, count: count, page: page)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getNextEpochsWithRequestBuilder(number: number, count: count, page: page)
+        }
     }
 
     /**
@@ -599,6 +752,41 @@ open class CardanoEpochsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Listing of next epochs
+
+     - parameter number: (path) Number of the requested epoch.
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results. (optional, default to 1)
+     - returns: [EpochContent]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getNextEpochsAsync(
+            number: Int, count: Int? = nil, page: Int? = nil
+    ) async throws -> [EpochContent] {
+        try await asyncWrapper { completion in
+            getNextEpochsWithRequestBuilder(number: number, count: count, page: page).execute { result in completion(result) }
+        }
+    }
+    
+    /**
+    Listing of next epochs. Fetches all paged records.
+
+     - parameter number: (path) Number of the requested epoch.
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getNextEpochsAllAsync(
+            number: Int,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [EpochContent] {
+        let loader = PageLoader<EpochContent>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getNextEpochs(number: number, count: count, page: page, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**
@@ -650,15 +838,9 @@ open class CardanoEpochsAPI: BaseService {
         apiResponseQueue: DispatchQueue? = nil,
         completion: @escaping (_ result: Swift.Result<[EpochContent], Error>) -> Void
     ) -> APIRequest {
-        getPreviousEpochsWithRequestBuilder(number: number, count: count, page: page)
-            .execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
-                switch result {
-                case let .success(response):
-                    completion(.success(response.body!))
-                case let .failure(error):
-                    completion(.failure(error))
-                }
-            }
+        completionWrapper(apiResponseQueue, completion: completion) {
+            getPreviousEpochsWithRequestBuilder(number: number, count: count, page: page)
+        }
     }
 
     /**
@@ -682,6 +864,41 @@ open class CardanoEpochsAPI: BaseService {
             completion(compl)
         })
         return APILoaderRequest(loader: loader)
+    }
+
+    /**
+     Listing of previous epochs
+
+     - parameter number: (path) Number of the epoch
+     - parameter count: (query) The number of results displayed on one page. (optional, default to 100)
+     - parameter page: (query) The page number for listing the results (optional, default to 1)
+     - returns: [EpochContent]
+     */
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func getPreviousEpochsAsync(
+            number: Int, count: Int? = nil, page: Int? = nil
+    ) async throws -> [EpochContent] {
+        try await asyncWrapper { completion in
+            getPreviousEpochsWithRequestBuilder(number: number, count: count, page: page).execute { result in completion(result) }
+        }
+    }
+
+    /**
+    Listing of previous epochs. Fetches all paged records.
+
+     - parameter number: (path) Number of the epoch
+     - parameter apiResponseQueue: The queue on which api response is dispatched.
+     - parameter batchSize: Number of concurrent requests for page download. If nil, config.batchSize is used.
+     */
+    open func getPreviousEpochsAllAsync(
+            number: Int,
+            apiResponseQueue: DispatchQueue? = nil,
+            batchSize: Int? = nil
+    ) async throws -> [EpochContent] {
+        let loader = PageLoader<EpochContent>(batchSize: batchSize ?? config.batchSize)
+        return try await loader.loadAllAsync({ (count, page, compl) in
+            let _ = self.getPreviousEpochs(number: number, count: count, page: page, apiResponseQueue: apiResponseQueue, completion: compl)
+        })
     }
 
     /**

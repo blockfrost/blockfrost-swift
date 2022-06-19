@@ -7,9 +7,6 @@
 import Foundation
 import Alamofire
 
-//@available(*, deprecated, renamed: "BlockfrostSDK")
-//public typealias OpenAPIClientAPI = BlockfrostSDK
-
 open class BlockfrostConfig {
     public static let USER_AGENT = "BlockfrostSwiftSDK"
     public static let URL_MAINNET = "https://cardano-mainnet.blockfrost.io/api/v0"
@@ -158,6 +155,7 @@ open class BlockfrostRetryPolicy : RetryPolicy {
 }
 
 open class APIRequest {
+    @discardableResult
     open func cancel() -> Bool { false }
 }
 
@@ -193,6 +191,7 @@ open class RequestBuilder<T> {
         }
     }
 
+    @discardableResult
     open func execute(_ apiResponseQueue: DispatchQueue = BlockfrostConfig.shared().apiResponseQueue,
                       _ completion: @escaping (_ result: Swift.Result<Response<T>, Error>) -> Void) -> APIRequest {
         fatalError()
@@ -216,11 +215,59 @@ public protocol RequestBuilderFactory {
     func getBuilder<T: Decodable>() -> RequestBuilder<T>.Type
 }
 
+public typealias AsyncRequestBuilder<T> = (_ completion: @escaping (_ result: Swift.Result<Response<T>, Error>) -> Void) -> APIRequest
+
 open class BaseService {
     var config: BlockfrostConfig = BlockfrostConfig.shared()
 
     public init(config: BlockfrostConfig? = nil) {
         self.config = config ?? BlockfrostConfig.shared()
+    }
+
+    @discardableResult
+    open func completionWrapper<T>(
+            _ apiResponseQueue: DispatchQueue? = nil,
+            completion: @escaping (_ result: Swift.Result<T, Error>) -> Void,
+            requestBuilder: () -> RequestBuilder<T>
+    ) -> APIRequest {
+        requestBuilder().execute(apiResponseQueue ?? config.apiResponseQueue) { result -> Void in
+            switch result {
+            case let .success(response):
+                completion(.success(response.body!))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    @discardableResult
+    @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    open func asyncWrapper<T>(
+            _ requestCreator: AsyncRequestBuilder<T>
+    ) async throws -> T {
+        var request: APIRequest?
+        return try await withTaskCancellationHandler {
+            try Task.checkCancellation()
+            return try await withCheckedThrowingContinuation { continuation in
+                guard !Task.isCancelled else {
+                    continuation.resume(throwing: CancellationError())
+                    return
+                }
+
+                let completion: (_ result: Swift.Result<Response<T>, Error>) -> Void = { result in
+                    switch result {
+                    case let .success(response):
+                        continuation.resume(returning: response.body!)
+                    case let .failure(error):
+                        continuation.resume(throwing: error)
+                    }
+                }
+
+                request = requestCreator(completion)
+            }
+        } onCancel: { [request] in
+            request?.cancel()
+        }
     }
 }
 

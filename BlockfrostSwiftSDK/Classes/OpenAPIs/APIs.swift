@@ -261,7 +261,7 @@ open class BaseService {
                     }
                 }
 
-                request = requestBuilder().execute { result in completion(result) }
+                request = requestBuilder().execute(config.apiResponseQueue) { result in completion(result) }
             }
         } onCancel: { [request] in
             request?.cancel()

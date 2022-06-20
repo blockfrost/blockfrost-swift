@@ -46,8 +46,8 @@ open class CardanoTransactionsAPI : BaseService {
     open func getTransactionAsync(
             hash: String
     ) async throws -> TxContent {
-        try await asyncWrapper { completion in
-            getTransactionWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionWithRequestBuilder(hash: hash)
         }
     }
 
@@ -107,8 +107,8 @@ open class CardanoTransactionsAPI : BaseService {
     open func getTransactionDelegationsAsync(
             hash: String
     ) async throws -> [TxContentDelegation] {
-        try await asyncWrapper { completion in
-            getTransactionDelegationsWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionDelegationsWithRequestBuilder(hash: hash)
         }
     }
 
@@ -168,8 +168,8 @@ open class CardanoTransactionsAPI : BaseService {
     open func getTransactionMetadataAsync(
             hash: String
     ) async throws -> [TxContentMetadata] {
-        try await asyncWrapper { completion in
-            getTransactionMetadataWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionMetadataWithRequestBuilder(hash: hash)
         }
     }
 
@@ -229,8 +229,8 @@ open class CardanoTransactionsAPI : BaseService {
     open func getTransactionMetadataCborAsync(
             hash: String
     ) async throws -> [TxContentMetadataCbor] {
-        try await asyncWrapper { completion in
-            getTransactionMetadataCborWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionMetadataCborWithRequestBuilder(hash: hash)
         }
     }
 
@@ -290,8 +290,8 @@ open class CardanoTransactionsAPI : BaseService {
     open func getTransactionMirsAsync(
             hash: String
     ) async throws -> [TxContentMir] {
-        try await asyncWrapper { completion in
-            getTransactionMirsWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionMirsWithRequestBuilder(hash: hash)
         }
     }
 
@@ -351,8 +351,8 @@ open class CardanoTransactionsAPI : BaseService {
     open func getTransactionPoolRetiresAsync(
             hash: String
     ) async throws -> [TxContentPoolRetir] {
-        try await asyncWrapper { completion in
-            getTransactionPoolRetiresWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionPoolRetiresWithRequestBuilder(hash: hash)
         }
     }
 
@@ -412,8 +412,8 @@ open class CardanoTransactionsAPI : BaseService {
     open func getTransactionPoolUpdatesAsync(
             hash: String
     ) async throws -> [TxContentPoolCert] {
-        try await asyncWrapper { completion in
-            getTransactionPoolUpdatesWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionPoolUpdatesWithRequestBuilder(hash: hash)
         }
     }
 
@@ -473,8 +473,8 @@ open class CardanoTransactionsAPI : BaseService {
     open func getTransactionRedeemersAsync(
             hash: String
     ) async throws -> [TxContentRedeemer] {
-        try await asyncWrapper { completion in
-            getTransactionRedeemersWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionRedeemersWithRequestBuilder(hash: hash)
         }
     }
 
@@ -534,8 +534,8 @@ open class CardanoTransactionsAPI : BaseService {
     open func getTransactionStakesAsync(
             hash: String
     ) async throws -> [TxContentStakeAddr] {
-        try await asyncWrapper { completion in
-            getTransactionStakesWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionStakesWithRequestBuilder(hash: hash)
         }
     }
 
@@ -595,8 +595,8 @@ open class CardanoTransactionsAPI : BaseService {
     open func getTransactionUtxosAsync(
             hash: String
     ) async throws -> TxContentUtxo {
-        try await asyncWrapper { completion in
-            getTransactionUtxosWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionUtxosWithRequestBuilder(hash: hash)
         }
     }
 
@@ -656,8 +656,8 @@ open class CardanoTransactionsAPI : BaseService {
     open func getTransactionWithdrawalsAsync(
             hash: String
     ) async throws -> [TxContentWithdrawal] {
-        try await asyncWrapper { completion in
-            getTransactionWithdrawalsWithRequestBuilder(hash: hash).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionWithdrawalsWithRequestBuilder(hash: hash)
         }
     }
 
@@ -719,8 +719,8 @@ open class CardanoTransactionsAPI : BaseService {
             transaction: Data,
             contentType: ContentType_txSubmitPost = .applicationCbor
     ) async throws -> String {
-        try await asyncWrapper { completion in
-            submitTransactionWithRequestBuilder(transaction: transaction, contentType: contentType).execute { result in completion(result) }
+        try await asyncWrapper {
+            submitTransactionWithRequestBuilder(transaction: transaction, contentType: contentType)
         }
     }
 

@@ -68,8 +68,8 @@ open class CardanoAccountsAPI: BaseService {
     open func getAccountAddressesAsync(
             stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [AccountAddressesContent] {
-        try await asyncWrapper { completion in
-            getAccountAddressesWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAccountAddressesWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
         }
     }
     
@@ -186,8 +186,8 @@ open class CardanoAccountsAPI: BaseService {
     open func getAccountAssetsAsync(
             stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [AccountAddressesAsset] {
-        try await asyncWrapper { completion in
-            getAccountAssetsWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAccountAssetsWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
         }
     }
     
@@ -274,8 +274,8 @@ open class CardanoAccountsAPI: BaseService {
     open func getAccountByStakeAddressAsync(
             stakeAddress: String
     ) async throws -> AccountContent {
-        try await asyncWrapper { completion in
-            getAccountByStakeAddressWithRequestBuilder(stakeAddress: stakeAddress).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAccountByStakeAddressWithRequestBuilder(stakeAddress: stakeAddress)
         }
     }
 
@@ -365,8 +365,8 @@ open class CardanoAccountsAPI: BaseService {
     open func getAccountDelegationHistoryAsync(
             stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [AccountDelegationContent] {
-        try await asyncWrapper { completion in
-            getAccountDelegationHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAccountDelegationHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
         }
     }
     
@@ -483,8 +483,8 @@ open class CardanoAccountsAPI: BaseService {
     open func getAccountHistoryAsync(
             stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [AccountHistoryContent] {
-        try await asyncWrapper { completion in
-            getAccountHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAccountHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
         }
     }
     
@@ -601,8 +601,8 @@ open class CardanoAccountsAPI: BaseService {
     open func getAccountMirHistoryAsync(
             stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [AccountMirContent] {
-        try await asyncWrapper { completion in
-            getAccountMirHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAccountMirHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
         }
     }
     
@@ -719,8 +719,8 @@ open class CardanoAccountsAPI: BaseService {
     open func getAccountRegistrationHistoryAsync(
             stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [AccountRegistrationContent] {
-        try await asyncWrapper { completion in
-            getAccountRegistrationHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAccountRegistrationHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
         }
     }
     
@@ -837,8 +837,8 @@ open class CardanoAccountsAPI: BaseService {
     open func getAccountRewardHistoryAsync(
             stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [AccountRewardContent] {
-        try await asyncWrapper { completion in
-            getAccountRewardHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAccountRewardHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
         }
     }
     
@@ -955,8 +955,8 @@ open class CardanoAccountsAPI: BaseService {
     open func getAccountWithdrawalHistoryAsync(
             stakeAddress: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [AccountWithdrawalContent] {
-        try await asyncWrapper { completion in
-            getAccountWithdrawalHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAccountWithdrawalHistoryWithRequestBuilder(stakeAddress: stakeAddress, count: count, page: page, order: order)
         }
     }
     

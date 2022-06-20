@@ -38,8 +38,8 @@ open class CardanoPoolsAPI: BaseService {
     open func getPoolAsync(
             poolId: String
     ) async throws -> Pool {
-        try await asyncWrapper { completion in
-            getPoolWithRequestBuilder(poolId: poolId).execute { result in completion(result) }
+        try await asyncWrapper {
+            getPoolWithRequestBuilder(poolId: poolId)
         }
     }
 
@@ -129,8 +129,8 @@ open class CardanoPoolsAPI: BaseService {
     open func getPoolBlocksAsync(
             poolId: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [String] {
-        try await asyncWrapper { completion in
-            getPoolBlocksWithRequestBuilder(poolId: poolId, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getPoolBlocksWithRequestBuilder(poolId: poolId, count: count, page: page, order: order)
         }
     }
 
@@ -247,8 +247,8 @@ open class CardanoPoolsAPI: BaseService {
     open func getPoolDelegatorsAsync(
             poolId: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [PoolDelegator] {
-        try await asyncWrapper { completion in
-            getPoolDelegatorsWithRequestBuilder(poolId: poolId, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getPoolDelegatorsWithRequestBuilder(poolId: poolId, count: count, page: page, order: order)
         }
     }
     
@@ -365,8 +365,8 @@ open class CardanoPoolsAPI: BaseService {
     open func getPoolHistoryAsync(
             poolId: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [PoolHistory] {
-        try await asyncWrapper { completion in
-            getPoolHistoryWithRequestBuilder(poolId: poolId, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getPoolHistoryWithRequestBuilder(poolId: poolId, count: count, page: page, order: order)
         }
     }
     
@@ -453,8 +453,8 @@ open class CardanoPoolsAPI: BaseService {
     open func getPoolMetadataAsync(
             poolId: String
     ) async throws -> PoolMetadata? {
-        try await asyncWrapper { completion in
-            getPoolMetadataWithRequestBuilder(poolId: poolId).execute { result in completion(result) }
+        try await asyncWrapper {
+            getPoolMetadataWithRequestBuilder(poolId: poolId)
         }
     }
 
@@ -514,8 +514,8 @@ open class CardanoPoolsAPI: BaseService {
     open func getPoolRelaysAsync(
             poolId: String
     ) async throws -> [PoolRelay] {
-        try await asyncWrapper { completion in
-            getPoolRelaysWithRequestBuilder(poolId: poolId).execute { result in completion(result) }
+        try await asyncWrapper {
+            getPoolRelaysWithRequestBuilder(poolId: poolId)
         }
     }
 
@@ -605,8 +605,8 @@ open class CardanoPoolsAPI: BaseService {
     open func getPoolUpdatesAsync(
             poolId: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [PoolUpdate] {
-        try await asyncWrapper { completion in
-            getPoolUpdatesWithRequestBuilder(poolId: poolId, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getPoolUpdatesWithRequestBuilder(poolId: poolId, count: count, page: page, order: order)
         }
     }
 
@@ -720,8 +720,8 @@ open class CardanoPoolsAPI: BaseService {
     open func getPoolsAsync(
             count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [String] {
-        try await asyncWrapper { completion in
-            getPoolsWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getPoolsWithRequestBuilder(count: count, page: page, order: order)
         }
     }
     
@@ -831,8 +831,8 @@ open class CardanoPoolsAPI: BaseService {
     open func getRetiredPoolsAsync(
             count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [PoolListRetire] {
-        try await asyncWrapper { completion in
-            getRetiredPoolsWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getRetiredPoolsWithRequestBuilder(count: count, page: page, order: order)
         }
     }
 
@@ -941,8 +941,8 @@ open class CardanoPoolsAPI: BaseService {
     open func getRetiringPoolsAsync(
             count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [PoolListRetire] {
-        try await asyncWrapper { completion in
-            getRetiringPoolsWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getRetiringPoolsWithRequestBuilder(count: count, page: page, order: order)
         }
     }
     

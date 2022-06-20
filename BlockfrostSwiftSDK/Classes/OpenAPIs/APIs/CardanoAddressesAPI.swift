@@ -38,8 +38,8 @@ open class CardanoAddressesAPI: BaseService {
     open func getAddressAsync(
             address: String
     ) async throws -> AddressContent {
-        try await asyncWrapper { completion in
-            getAddressWithRequestBuilder(address: address).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAddressWithRequestBuilder(address: address)
         }
     }
 
@@ -99,8 +99,8 @@ open class CardanoAddressesAPI: BaseService {
     open func getAddressDetailsAsync(
             address: String
     ) async throws -> AddressContentTotal {
-        try await asyncWrapper { completion in
-            getAddressDetailsWithRequestBuilder(address: address).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAddressDetailsWithRequestBuilder(address: address)
         }
     }
 
@@ -196,8 +196,8 @@ open class CardanoAddressesAPI: BaseService {
     open func getAddressTransactionsAsync(
             address: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil, from: String? = nil, to: String? = nil
     ) async throws -> [AddressTransactionsContent] {
-        try await asyncWrapper { completion in
-            getAddressTransactionsWithRequestBuilder(address: address, count: count, page: page, order: order, from: from, to: to).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAddressTransactionsWithRequestBuilder(address: address, count: count, page: page, order: order, from: from, to: to)
         }
     }
     
@@ -320,8 +320,8 @@ open class CardanoAddressesAPI: BaseService {
     open func getAddressUtxosAsync(
             address: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [AddressUtxoContent] {
-        try await asyncWrapper { completion in
-            getAddressUtxosWithRequestBuilder(address: address, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAddressUtxosWithRequestBuilder(address: address, count: count, page: page, order: order)
         }
     }
     

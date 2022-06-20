@@ -65,8 +65,8 @@ open class CardanoEpochsAPI: BaseService {
     open func getActiveStakesForEpochAsync(
             number: Int, count: Int? = nil, page: Int? = nil
     ) async throws -> [EpochStakeContent] {
-        try await asyncWrapper { completion in
-            getActiveStakesForEpochWithRequestBuilder(number: number, count: count, page: page).execute { result in completion(result) }
+        try await asyncWrapper {
+            getActiveStakesForEpochWithRequestBuilder(number: number, count: count, page: page)
         }
     }
     
@@ -180,8 +180,8 @@ open class CardanoEpochsAPI: BaseService {
     open func getActiveStakesForEpochAndPoolAsync(
             number: Int, poolId: String, count: Int? = nil, page: Int? = nil
     ) async throws -> [EpochStakePoolContent] {
-        try await asyncWrapper { completion in
-            getActiveStakesForEpochAndPoolWithRequestBuilder(number: number, poolId: poolId, count: count, page: page).execute { result in completion(result) }
+        try await asyncWrapper {
+            getActiveStakesForEpochAndPoolWithRequestBuilder(number: number, poolId: poolId, count: count, page: page)
         }
     }
     
@@ -301,8 +301,8 @@ open class CardanoEpochsAPI: BaseService {
     open func getBlocksForEpochAsync(
             number: Int, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [String] {
-        try await asyncWrapper { completion in
-            getBlocksForEpochWithRequestBuilder(number: number, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getBlocksForEpochWithRequestBuilder(number: number, count: count, page: page, order: order)
         }
     }
     
@@ -422,8 +422,8 @@ open class CardanoEpochsAPI: BaseService {
     open func getBlocksForEpochAndPoolAsync(
             number: Int, poolId: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [String] {
-        try await asyncWrapper { completion in
-            getBlocksForEpochAndPoolWithRequestBuilder(number: number, poolId: poolId, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getBlocksForEpochAndPoolWithRequestBuilder(number: number, poolId: poolId, count: count, page: page, order: order)
         }
     }
 
@@ -515,8 +515,8 @@ open class CardanoEpochsAPI: BaseService {
     open func getEpochAsync(
             number: Int
     ) async throws -> EpochContent {
-        try await asyncWrapper { completion in
-            getEpochWithRequestBuilder(number: number).execute { result in completion(result) }
+        try await asyncWrapper {
+            getEpochWithRequestBuilder(number: number)
         }
     }
 
@@ -576,8 +576,8 @@ open class CardanoEpochsAPI: BaseService {
     open func getEpochParamAsync(
             number: Int
     ) async throws -> EpochParamContent {
-        try await asyncWrapper { completion in
-            getEpochParamWithRequestBuilder(number: number).execute { result in completion(result) }
+        try await asyncWrapper {
+            getEpochParamWithRequestBuilder(number: number)
         }
     }
 
@@ -631,8 +631,8 @@ open class CardanoEpochsAPI: BaseService {
     open func getLatestEpochAsync(
 
     ) async throws -> EpochContent {
-        try await asyncWrapper { completion in
-            getLatestEpochWithRequestBuilder().execute { result in completion(result) }
+        try await asyncWrapper {
+            getLatestEpochWithRequestBuilder()
         }
     }
 
@@ -682,8 +682,8 @@ open class CardanoEpochsAPI: BaseService {
     open func getLatestEpochParamAsync(
 
     ) async throws -> EpochParamContent {
-        try await asyncWrapper { completion in
-            getLatestEpochParamWithRequestBuilder().execute { result in completion(result) }
+        try await asyncWrapper {
+            getLatestEpochParamWithRequestBuilder()
         }
     }
 
@@ -766,8 +766,8 @@ open class CardanoEpochsAPI: BaseService {
     open func getNextEpochsAsync(
             number: Int, count: Int? = nil, page: Int? = nil
     ) async throws -> [EpochContent] {
-        try await asyncWrapper { completion in
-            getNextEpochsWithRequestBuilder(number: number, count: count, page: page).execute { result in completion(result) }
+        try await asyncWrapper {
+            getNextEpochsWithRequestBuilder(number: number, count: count, page: page)
         }
     }
     
@@ -878,8 +878,8 @@ open class CardanoEpochsAPI: BaseService {
     open func getPreviousEpochsAsync(
             number: Int, count: Int? = nil, page: Int? = nil
     ) async throws -> [EpochContent] {
-        try await asyncWrapper { completion in
-            getPreviousEpochsWithRequestBuilder(number: number, count: count, page: page).execute { result in completion(result) }
+        try await asyncWrapper {
+            getPreviousEpochsWithRequestBuilder(number: number, count: count, page: page)
         }
     }
 

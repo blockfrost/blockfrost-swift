@@ -32,8 +32,8 @@ open class CardanoNetworkAPI: BaseService {
     open func getNetworkAsync(
 
     ) async throws -> Network {
-        try await asyncWrapper { completion in
-            getNetworkWithRequestBuilder().execute { result in completion(result) }
+        try await asyncWrapper {
+            getNetworkWithRequestBuilder()
         }
     }
 

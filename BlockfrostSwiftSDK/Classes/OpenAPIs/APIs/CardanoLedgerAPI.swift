@@ -32,8 +32,8 @@ open class CardanoLedgerAPI: BaseService {
     open func getGenesisAsync(
 
     ) async throws -> GenesisContent {
-        try await asyncWrapper { completion in
-            getGenesisWithRequestBuilder().execute { result in completion(result) }
+        try await asyncWrapper {
+            getGenesisWithRequestBuilder()
         }
     }
 

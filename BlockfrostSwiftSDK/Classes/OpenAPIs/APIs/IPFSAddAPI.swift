@@ -36,8 +36,8 @@ open class IPFSAddAPI: BaseService {
     open func addAsync(
             file: URL
     ) async throws -> IPFSObject {
-        try await asyncWrapper { completion in
-            addWithRequestBuilder(file: file).execute { result in completion(result) }
+        try await asyncWrapper {
+            addWithRequestBuilder(file: file)
         }
     }
 

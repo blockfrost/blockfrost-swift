@@ -69,8 +69,8 @@ open class IPFSPinsAPI: BaseService {
     open func getPinListAsync(
             count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [PinItem] {
-        try await asyncWrapper { completion in
-            getPinListWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getPinListWithRequestBuilder(count: count, page: page, order: order)
         }
     }
 
@@ -152,8 +152,8 @@ open class IPFSPinsAPI: BaseService {
     open func getPinListByIpfsPathAsync(
             iPFSPath: String
     ) async throws -> PinItem {
-        try await asyncWrapper { completion in
-            getPinListByIpfsPathWithRequestBuilder(iPFSPath: iPFSPath).execute { result in completion(result) }
+        try await asyncWrapper {
+            getPinListByIpfsPathWithRequestBuilder(iPFSPath: iPFSPath)
         }
     }
 
@@ -213,8 +213,8 @@ open class IPFSPinsAPI: BaseService {
     open func pinAddAsync(
             iPFSPath: String
     ) async throws -> PinResponse {
-        try await asyncWrapper { completion in
-            pinAddWithRequestBuilder(iPFSPath: iPFSPath).execute { result in completion(result) }
+        try await asyncWrapper {
+            pinAddWithRequestBuilder(iPFSPath: iPFSPath)
         }
     }
 
@@ -272,8 +272,8 @@ open class IPFSPinsAPI: BaseService {
     open func removePinAsync(
             iPFSPath: String
     ) async throws -> PinResponse {
-        try await asyncWrapper { completion in
-            removePinWithRequestBuilder(iPFSPath: iPFSPath).execute { result in completion(result) }
+        try await asyncWrapper {
+            removePinWithRequestBuilder(iPFSPath: iPFSPath)
         }
     }
 

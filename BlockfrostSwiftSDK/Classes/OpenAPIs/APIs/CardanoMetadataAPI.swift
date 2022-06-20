@@ -68,8 +68,8 @@ open class CardanoMetadataAPI: BaseService {
     open func getTransactionMetadataCborForLabelAsync(
             label: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [TxMetadataLabelCbor] {
-        try await asyncWrapper { completion in
-            getTransactionMetadataCborForLabelWithRequestBuilder(label: label, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionMetadataCborForLabelWithRequestBuilder(label: label, count: count, page: page, order: order)
         }
     }
     
@@ -186,8 +186,8 @@ open class CardanoMetadataAPI: BaseService {
     open func getTransactionMetadataJsonForLabelAsync(
             label: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [TxMetadataLabelJson] {
-        try await asyncWrapper { completion in
-            getTransactionMetadataJsonForLabelWithRequestBuilder(label: label, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionMetadataJsonForLabelWithRequestBuilder(label: label, count: count, page: page, order: order)
         }
     }
     
@@ -301,8 +301,8 @@ open class CardanoMetadataAPI: BaseService {
     open func getTransactionMetadataLabelsAsync(
             count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [TxMetadataLabel] {
-        try await asyncWrapper { completion in
-            getTransactionMetadataLabelsWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionMetadataLabelsWithRequestBuilder(count: count, page: page, order: order)
         }
     }
     /**

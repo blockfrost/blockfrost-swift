@@ -16,7 +16,7 @@ let package = Package(
         .package(name:"BlockfrostSwiftSDK", path: "../"),
 
         // Requires .product in target.executableTarget.dependencies
-        //.package(url: "https://github.com/blockfrost/blockfrost-swift.git", from: "0.1.0"),
+        //.package(url: "https://github.com/blockfrost/blockfrost-swift.git", from: "1.0.1"),
 
     ],
     targets: [

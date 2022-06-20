@@ -42,8 +42,8 @@ open class IPFSGatewayAPI: BaseService {
     open func callGetAsync(
             iPFSPath: String
     ) async throws {
-        try await asyncWrapper { completion in
-            callGetWithRequestBuilder(iPFSPath: iPFSPath).execute { result in completion(result) }
+        try await asyncWrapper {
+            callGetWithRequestBuilder(iPFSPath: iPFSPath)
         }
     }
 

@@ -32,8 +32,8 @@ open class MetricsAPI: BaseService {
     open func getMetricsAsync(
 
     ) async throws -> [Metric] {
-        try await asyncWrapper { completion in
-            getMetricsWithRequestBuilder().execute { result in completion(result) }
+        try await asyncWrapper {
+            getMetricsWithRequestBuilder()
         }
     }
 
@@ -83,8 +83,8 @@ open class MetricsAPI: BaseService {
     open func getMetricsEndpointsAsync(
 
     ) async throws -> [MetricsEndpoint] {
-        try await asyncWrapper { completion in
-            getMetricsEndpointsWithRequestBuilder().execute { result in completion(result) }
+        try await asyncWrapper {
+            getMetricsEndpointsWithRequestBuilder()
         }
     }
 

@@ -215,8 +215,6 @@ public protocol RequestBuilderFactory {
     func getBuilder<T: Decodable>() -> RequestBuilder<T>.Type
 }
 
-public typealias AsyncRequestBuilder<T> = (_ completion: @escaping (_ result: Swift.Result<Response<T>, Error>) -> Void) -> APIRequest
-
 open class BaseService {
     var config: BlockfrostConfig = BlockfrostConfig.shared()
 
@@ -243,7 +241,7 @@ open class BaseService {
     @discardableResult
     @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
     open func asyncWrapper<T>(
-            _ requestCreator: AsyncRequestBuilder<T>
+            _ requestBuilder: () -> RequestBuilder<T>
     ) async throws -> T {
         var request: APIRequest?
         return try await withTaskCancellationHandler {
@@ -263,7 +261,7 @@ open class BaseService {
                     }
                 }
 
-                request = requestCreator(completion)
+                request = requestBuilder().execute { result in completion(result) }
             }
         } onCancel: { [request] in
             request?.cancel()

@@ -32,8 +32,8 @@ open class HealthAPI: BaseService {
     open func getApiRootAsync(
 
     ) async throws -> ApiRoot {
-        try await asyncWrapper { completion in
-            getApiRootWithRequestBuilder().execute { result in completion(result) }
+        try await asyncWrapper {
+            getApiRootWithRequestBuilder()
         }
     }
 
@@ -83,8 +83,8 @@ open class HealthAPI: BaseService {
     open func getCurrentBackendTimeAsync(
 
     ) async throws -> Clock {
-        try await asyncWrapper { completion in
-            getCurrentBackendTimeWithRequestBuilder().execute { result in completion(result) }
+        try await asyncWrapper {
+            getCurrentBackendTimeWithRequestBuilder()
         }
     }
 
@@ -134,8 +134,8 @@ open class HealthAPI: BaseService {
     open func getHealthAsync(
 
     ) async throws -> Health {
-        try await asyncWrapper { completion in
-            getHealthWithRequestBuilder().execute { result in completion(result) }
+        try await asyncWrapper {
+            getHealthWithRequestBuilder()
         }
     }
 

@@ -38,8 +38,8 @@ open class CardanoAssetsAPI: BaseService {
     open func getAssetAsync(
             asset: String
     ) async throws -> Asset {
-        try await asyncWrapper { completion in
-            getAssetWithRequestBuilder(asset: asset).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAssetWithRequestBuilder(asset: asset)
         }
     }
 
@@ -129,8 +129,8 @@ open class CardanoAssetsAPI: BaseService {
     open func getAssetAddressesAsync(
             asset: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [AssetAddress] {
-        try await asyncWrapper { completion in
-            getAssetAddressesWithRequestBuilder(asset: asset, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAssetAddressesWithRequestBuilder(asset: asset, count: count, page: page, order: order)
         }
     }
     
@@ -247,8 +247,8 @@ open class CardanoAssetsAPI: BaseService {
     open func getAssetHistoryAsync(
             asset: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [AssetHistory] {
-        try await asyncWrapper { completion in
-            getAssetHistoryWithRequestBuilder(asset: asset, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAssetHistoryWithRequestBuilder(asset: asset, count: count, page: page, order: order)
         }
     }
     /**
@@ -364,8 +364,8 @@ open class CardanoAssetsAPI: BaseService {
     open func getAssetTransactionsAsync(
             asset: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [AssetTransaction] {
-        try await asyncWrapper { completion in
-            getAssetTransactionsWithRequestBuilder(asset: asset, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAssetTransactionsWithRequestBuilder(asset: asset, count: count, page: page, order: order)
         }
     }
     
@@ -479,8 +479,8 @@ open class CardanoAssetsAPI: BaseService {
     open func getAssetsAsync(
             count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [AssetRecord] {
-        try await asyncWrapper { completion in
-            getAssetsWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAssetsWithRequestBuilder(count: count, page: page, order: order)
         }
     }
     
@@ -592,8 +592,8 @@ open class CardanoAssetsAPI: BaseService {
     open func getPolicyAssetsAsync(
             policyId: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [AssetPolicy] {
-        try await asyncWrapper { completion in
-            getPolicyAssetsWithRequestBuilder(policyId: policyId, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getPolicyAssetsWithRequestBuilder(policyId: policyId, count: count, page: page, order: order)
         }
     }
     

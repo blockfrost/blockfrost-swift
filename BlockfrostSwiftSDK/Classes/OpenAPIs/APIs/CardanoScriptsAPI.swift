@@ -38,8 +38,8 @@ open class CardanoScriptsAPI: BaseService {
     open func getScriptAsync(
             scriptHash: String
     ) async throws -> Script {
-        try await asyncWrapper { completion in
-            getScriptWithRequestBuilder(scriptHash: scriptHash).execute { result in completion(result) }
+        try await asyncWrapper {
+            getScriptWithRequestBuilder(scriptHash: scriptHash)
         }
     }
 
@@ -129,8 +129,8 @@ open class CardanoScriptsAPI: BaseService {
     open func getScriptRedeemersAsync(
             scriptHash: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [ScriptRedeemer] {
-        try await asyncWrapper { completion in
-            getScriptRedeemersWithRequestBuilder(scriptHash: scriptHash, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getScriptRedeemersWithRequestBuilder(scriptHash: scriptHash, count: count, page: page, order: order)
         }
     }
 
@@ -244,8 +244,8 @@ open class CardanoScriptsAPI: BaseService {
     open func getScriptsAsync(
             count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [Script] {
-        try await asyncWrapper { completion in
-            getScriptsWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getScriptsWithRequestBuilder(count: count, page: page, order: order)
         }
     }
     

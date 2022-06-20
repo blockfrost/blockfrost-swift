@@ -38,8 +38,8 @@ open class CardanoBlocksAPI: BaseService {
     open func getBlockAsync(
             hashOrNumber: String
     ) async throws -> BlockContent {
-        try await asyncWrapper { completion in
-            getBlockWithRequestBuilder(hashOrNumber: hashOrNumber).execute { result in completion(result) }
+        try await asyncWrapper {
+            getBlockWithRequestBuilder(hashOrNumber: hashOrNumber)
         }
     }
 
@@ -101,8 +101,8 @@ open class CardanoBlocksAPI: BaseService {
     open func getBlockInEpochInSlotAsync(
             epochNumber: Int, slotNumber: Int
     ) async throws -> BlockContent {
-        try await asyncWrapper { completion in
-            getBlockInEpochInSlotWithRequestBuilder(epochNumber: epochNumber, slotNumber: slotNumber).execute { result in completion(result) }
+        try await asyncWrapper {
+            getBlockInEpochInSlotWithRequestBuilder(epochNumber: epochNumber, slotNumber: slotNumber)
         }
     }
 
@@ -166,8 +166,8 @@ open class CardanoBlocksAPI: BaseService {
     open func getBlockInSlotAsync(
             slotNumber: Int
     ) async throws -> BlockContent {
-        try await asyncWrapper { completion in
-            getBlockInSlotWithRequestBuilder(slotNumber: slotNumber).execute { result in completion(result) }
+        try await asyncWrapper {
+            getBlockInSlotWithRequestBuilder(slotNumber: slotNumber)
         }
     }
 
@@ -257,8 +257,8 @@ open class CardanoBlocksAPI: BaseService {
     open func getBlockTransactionsAsync(
             hashOrNumber: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [String] {
-        try await asyncWrapper { completion in
-            getBlockTransactionsWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getBlockTransactionsWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page, order: order)
         }
     }
     
@@ -339,8 +339,8 @@ open class CardanoBlocksAPI: BaseService {
     open func getLatestBlockAsync(
 
     ) async throws -> BlockContent {
-        try await asyncWrapper { completion in
-            getLatestBlockWithRequestBuilder().execute { result in completion(result) }
+        try await asyncWrapper {
+            getLatestBlockWithRequestBuilder()
         }
     }
 
@@ -423,8 +423,8 @@ open class CardanoBlocksAPI: BaseService {
     open func getNextBlocksAsync(
             hashOrNumber: String, count: Int? = nil, page: Int? = nil
     ) async throws -> [BlockContent] {
-        try await asyncWrapper { completion in
-            getNextBlocksWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page).execute { result in completion(result) }
+        try await asyncWrapper {
+            getNextBlocksWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page)
         }
     }
     /**
@@ -534,8 +534,8 @@ open class CardanoBlocksAPI: BaseService {
     open func getPreviousBlocksAsync(
             hashOrNumber: String, count: Int? = nil, page: Int? = nil
     ) async throws -> [BlockContent] {
-        try await asyncWrapper { completion in
-            getPreviousBlocksWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page).execute { result in completion(result) }
+        try await asyncWrapper {
+            getPreviousBlocksWithRequestBuilder(hashOrNumber: hashOrNumber, count: count, page: page)
         }
     }
     
@@ -646,8 +646,8 @@ open class CardanoBlocksAPI: BaseService {
     open func getTransactionsInLatestBlockAsync(
             count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [String] {
-        try await asyncWrapper { completion in
-            getTransactionsInLatestBlockWithRequestBuilder(count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTransactionsInLatestBlockWithRequestBuilder(count: count, page: page, order: order)
         }
     }
     

@@ -36,8 +36,8 @@ open class NutLinkAPI: BaseService {
     open func getAddressAsync(
             address: String
     ) async throws -> NutlinkAddress {
-        try await asyncWrapper { completion in
-            getAddressWithRequestBuilder(address: address).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAddressWithRequestBuilder(address: address)
         }
     }
 
@@ -123,8 +123,8 @@ open class NutLinkAPI: BaseService {
     open func getAddressTickersAsync(
             address: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [NutlinkAddressTickers] {
-        try await asyncWrapper { completion in
-            getAddressTickersWithRequestBuilder(address: address, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getAddressTickersWithRequestBuilder(address: address, count: count, page: page, order: order)
         }
     }
 
@@ -239,8 +239,8 @@ open class NutLinkAPI: BaseService {
     open func getTickerRecordsByAddressAndTickerAsync(
             address: String, ticker: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [NutlinkAddressTicker] {
-        try await asyncWrapper { completion in
-            getTickerRecordsByAddressAndTickerWithRequestBuilder(address: address, ticker: ticker, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTickerRecordsByAddressAndTickerWithRequestBuilder(address: address, ticker: ticker, count: count, page: page, order: order)
         }
     }
 
@@ -357,8 +357,8 @@ open class NutLinkAPI: BaseService {
     open func getTickerRecordsByTickerAsync(
             ticker: String, count: Int? = nil, page: Int? = nil, order: SortOrder? = nil
     ) async throws -> [NutlinkTickersTicker] {
-        try await asyncWrapper { completion in
-            getTickerRecordsByTickerWithRequestBuilder(ticker: ticker, count: count, page: page, order: order).execute { result in completion(result) }
+        try await asyncWrapper {
+            getTickerRecordsByTickerWithRequestBuilder(ticker: ticker, count: count, page: page, order: order)
         }
     }
     
